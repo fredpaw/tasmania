@@ -1,0 +1,65 @@
+/*
+Theme Name: Enfold Child
+Description: A <a href='http://codex.wordpress.org/Child_Themes'>Child Theme</a> for the Enfold Wordpress Theme. If you plan to do a lot of file modifications we recommend to use this Theme instead of the original Theme. Updating wil be much easier then.
+Version: 1.0
+Author: Kriesi
+Author URI: http://www.kriesi.at
+Template: enfold
+*/
+
+
+
+/*Add your own styles here:*/
+
+/*________Header Style________*/
+#header_meta { background-color:#f9f9f9;}
+#avia2-menu a{
+	font-weight:normal;
+	font-size:14px;
+	text-decoration:none;
+}
+#avia-menu .sub-menu a:hover {color:#ffffff;}
+/* Menu Style */
+#menu-item-search {display:none;}
+#avia-menu  > li > a {font-size:15px; font-weight:normal;}
+#avia-menu .sub-menu {
+	-webkit-box-shadow: 0px 0px 10px 0px rgba(80, 80, 80, 0.75);
+	-moz-box-shadow:    0px 0px 10px 0px rgba(80, 80, 80, 0.75);
+	box-shadow:         0px 0px 10px 0px rgba(80, 80, 80, 0.75);
+}
+.sub-menu {
+	position:relative;
+	top:-10px;
+	left:10px;
+}
+#avia-menu .sub-menu li a {font-size:14px;border:none;}
+#avia-menu .sub-menu li a:hover .avia-menu-text{color:#ffffff;}
+/** normal **/
+
+/** scrolled **/
+
+/*________Footer Style________*/
+#footer {
+	padding-top:50px;
+}
+
+#contact-text {
+	position:relative;
+	top:-11px;
+}
+
+/*________General Style________*/
+
+/* Font style */
+.text-center {text-align:center;}
+
+.text-bold {	font-weight:bold;}
+
+.text-size-14 {font-size:14px;}
+.text-size-18 {font-size:18px;}
+.text-size-23 {font-size:23px;}
+
+.image-half-size {width:50%;	height:50%;}
+
+.no-margin {margin:0px;}
+.no-padding {padding:0px;}

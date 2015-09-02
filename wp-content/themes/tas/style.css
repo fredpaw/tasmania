@@ -13,15 +13,19 @@ Template: enfold
 
 /*________Header Style________*/
 #header_meta { background-color:#f9f9f9;}
+#avia2-menu li {border:none;}
 #avia2-menu a{
 	font-weight:normal;
 	font-size:14px;
 	text-decoration:none;
 }
-#avia-menu .sub-menu a:hover {color:#ffffff;}
+@media only screen and (min-width:768px) {
+	#header_meta .social_bookmarks > li{border:none;}
+}
+#avia2-menu #menu-item-search {position:relative;}
+
 /* Menu Style */
-#menu-item-search {display:none;}
-#avia-menu  > li > a {font-size:15px; font-weight:normal;}
+#avia-menu  > li > a {font-size:14px; font-weight:normal;}
 #avia-menu .sub-menu {
 	-webkit-box-shadow: 0px 0px 10px 0px rgba(80, 80, 80, 0.75);
 	-moz-box-shadow:    0px 0px 10px 0px rgba(80, 80, 80, 0.75);
@@ -34,6 +38,7 @@ Template: enfold
 }
 #avia-menu .sub-menu li a {font-size:14px;border:none;}
 #avia-menu .sub-menu li a:hover .avia-menu-text{color:#ffffff;}
+#avia-menu #menu-item-search {display:none;}
 /** normal **/
 
 /** scrolled **/
@@ -47,6 +52,22 @@ Template: enfold
 	position:relative;
 	top:-11px;
 }
+
+/*_________Other__________*/
+/** Search Form **/
+#searchform{ position:relative;}
+@media only screen and (min-width: 768px) {
+	#searchform{top:-8px;}
+}
+#top #searchform .ajax_search_response {position:absolute; top:30px; left:0px; display:block; opacity:1; -webkit-border-radius: 0px; -moz-border-radius: 0px; border-radius: 0px; padding-top:5px;}
+#top #searchform .ajax_search_response .ajax_search_entry:hover {background-color:#cccccc;}
+#searchform > div {width:180px;border:solid 1px #fff; -webkit-border-radius: 24px; -moz-border-radius: 24px; border-radius: 24px; background-color:#fff; -webkit-box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);
+-moz-box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);
+box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
+
+#searchform #s{background-color:transparent;color:000; height:20px; line-height:24px; font-size:12px; padding-top:0px; padding-bottom:0px; -webkit-border-radius: 24px; -moz-border-radius: 24px; border-radius: 24px; }
+
+#searchform #searchsubmit{background-color:transparent;color:#000; height:24px; line-height:24px; font-size:12px; -webkit-border-top-right-radius: 24px; -moz-border-top-right-radius: 24px; border-top-right-radius: 24px; -webkit-border-bottom-right-radius: 24px; -moz-border-bottom-right-radius: 24px; border-bottom-right-radius: 24px;}
 
 /*________General Style________*/
 

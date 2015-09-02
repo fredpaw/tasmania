@@ -35,7 +35,12 @@ if($headerS['header_topbar'] == true)
 						$nav = "";
 						
 						//display icons
-			            if(strpos( $headerS['header_social'], 'extra_header_active') !== false) echo $icons;
+			            //if(strpos( $headerS['header_social'], 'extra_header_active') !== false) echo $icons;
+						echo "<ul class='noLightbox social_bookmarks icon_count_3'>";
+						echo "<li class='social_icon_1'><a href=''><img src='".get_bloginfo('template_url')."/images/qq_1.png'/></a></li>";
+						echo "<li class='social_icon_2'><a href=''><img src='".get_bloginfo('template_url')."/images/weibo_1.png'/></a></li>";
+						echo "<li class='social_icon_3'><a href=''><img src='".get_bloginfo('template_url')."/images/weixin_1.png'/></a></li>";
+						echo "</ul>";
 					
 						//display navigation
 						if(strpos( $headerS['header_secondary_menu'], 'extra_header_active') !== false )
@@ -58,7 +63,18 @@ if($headerS['header_topbar'] == true)
 						if(!empty($nav) || apply_filters('avf_execute_avia_meta_header', false))
 						{
 							echo "<nav class='sub_menu' ".avia_markup_helper(array('context' => 'nav', 'echo' => false)).">";
-							echo $nav;
+							echo "<ul id='avia2-menu' class='menu'>";
+							echo "<li class='menu-item menu-item-type-custom menu-item-object-custom'><a href='".get_bloginfo('url')."'><span class='av-icon-char' aria-hidden='true' data-av_icon='' data-av_iconfont='entypo-fontello'></span></a></li>";
+							echo "<li class='menu-item menu-item-type-custom menu-item-object-custom'><a href='http://localhost/tasmania/store/'>商城首页</a></li>";
+							echo "<li id='menu-item-search' class='menu-item menu-item-search'>
+								    <form role='search' method='get' id='searchform' class='searchform' action='".esc_url( home_url( '/' ) )."'>
+									  <div>
+										<input type='text' value='".get_search_query()."' name='s' id='s' placeholder='搜索...'/>
+										<input type='submit' id='searchsubmit' value='' class='button avia-font-entypo-fontello'/>
+									  </div>
+								    </form>
+								</li>";
+							echo "</ul>";
 		                    do_action('avia_meta_header'); // Hook that can be used for plugins and theme extensions (currently: the wpml language selector)
 							echo '</nav>';
 						}

@@ -83,3 +83,10 @@ function footerColumn_register_widgets() {
 }
 
 add_action('widgets_init','footerColumn_register_widgets');
+
+/** Scripts Registration **/
+function tas_scripts() {
+	wp_enqueue_script( 'custom-script', get_template_directory_uri() . '/js/custom.js', array('jquery'), '1.0.0');
+}
+
+add_action( 'wp_enqueue_scripts', 'tas_scripts' );

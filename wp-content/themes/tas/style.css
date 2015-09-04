@@ -39,10 +39,12 @@ Template: enfold
 #avia-menu .sub-menu li a {font-size:14px;border:none;}
 #avia-menu .sub-menu li a:hover .avia-menu-text{color:#ffffff;}
 #avia-menu #menu-item-search {display:none;}
-/** normal **/
 
-/** scrolled **/
-
+/*__________Content Style___________*/
+.av-layout-grid-container {max-width:1200px;margin:auto;}
+#home_slider_content {position:relative; top:-100px; z-index:999;}
+#home_slider_content .flex_column section:first-child p{margin-bottom:0px;}
+#home-slider-content .flex_column section{margin-left:10px; margin-right:10px;}
 /*________Footer Style________*/
 #footer {
 	padding-top:50px;

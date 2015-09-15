@@ -921,22 +921,22 @@ if(!function_exists('avia_which_archive'))
 			{
 				if($wp_query->found_posts > 1)
 				{
-					$output =  $wp_query->found_posts ." ". __('search results for:','avia_framework')." ".esc_attr( get_search_query() );
+					$output =  $wp_query->found_posts ." ". __('个搜索结果:','avia_framework')." ".esc_attr( get_search_query() );
 				}
 				else
 				{
-					$output =  $wp_query->found_posts ." ". __('search result for:','avia_framework')." ".esc_attr( get_search_query() );
+					$output =  $wp_query->found_posts ." ". __('个搜索结果:','avia_framework')." ".esc_attr( get_search_query() );
 				}
 			}
 			else
 			{
 				if(!empty($_GET['s']))
 				{
-					$output = __('Search results for:','avia_framework')." ".esc_attr( get_search_query() );
+					$output = __('搜索结果:','avia_framework')." ".esc_attr( get_search_query() );
 				}
 				else
 				{
-					$output = __('To search the site please enter a valid term','avia_framework');
+					$output = __('请输入有效字符','avia_framework');
 				}
 			}
 

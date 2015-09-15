@@ -155,12 +155,12 @@ if(!function_exists('avia_ajax_search'))
 	    $posts		= (($query_function == 'get_posts') || !function_exists($query_function))  ? get_posts($search_query) : $query_function($search_query, $search_parameters, $defaults);
 	
 	    $search_messages = array(
-	            'no_criteria_matched' => __("Sorry, no posts matched your criteria", 'avia_framework'),
-	            'another_search_term' => __("Please try another search term", 'avia_framework'),
+	            'no_criteria_matched' => __("对不起，没有找到符合的文章", 'avia_framework'),
+	            'another_search_term' => __("请重新搜索", 'avia_framework'),
 	            'time_format'         => get_option('date_format'),
 	            'all_results_query'   => http_build_query($_REQUEST),
 	            'all_results_link'    => home_url('?' . http_build_query($_REQUEST)),
-	            'view_all_results'    => __('View all results','avia_framework')
+	            'view_all_results'    => __('查看所有结果','avia_framework')
             );
 		
 	    $search_messages = apply_filters('avf_ajax_search_messages', $search_messages, $search_query);

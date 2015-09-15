@@ -6,10 +6,8 @@ Author: Kriesi
 Author URI: http://www.kriesi.at
 Template: enfold
 */
-
-
-
 /*Add your own styles here:*/
+
 
 /*________Header Style________*/
 #header_meta { background-color:#f9f9f9;}
@@ -40,11 +38,95 @@ Template: enfold
 #avia-menu .sub-menu li a:hover .avia-menu-text{color:#ffffff;}
 #avia-menu #menu-item-search {display:none;}
 
+
 /*__________Content Style___________*/
+/** Home Page **/
 .av-layout-grid-container {max-width:1200px;margin:auto;}
-#home_slider_content {position:relative; top:-100px; z-index:999;}
-#home_slider_content .flex_column section:first-child p{margin-bottom:0px;}
-#home-slider-content .flex_column section{margin-left:10px; margin-right:10px;}
+@media only screen and (min-width:768px) {
+	#home_slider_content {position:relative; margin-top:-250px; z-index:10;}
+}
+#home_slider_content .flex_cell .flex_column:first-child {min-height:180px;}
+#home_slider_content .flex_cell .flex_column:first-child section:first-child p{margin-bottom:0px;}
+#home_slider_content .flex_cell .flex_column:first-child section:last-child p{margin-left:10px; margin-right:10px;}
+#home_slider_content .avia-button {margin:10px; height:36px; padding-top:10px; -webkit-border-radius: 18px; -moz-border-radius: 18px; border-radius: 18px; border:solid 1px white !important;}
+
+@media only screen and (min-width:768px) {
+	#home_post_content .post-entry .entry-content-wrapper {height:170px;}
+}
+@media only screen and (max-width:767px) {
+	#home_post_content .post-entry {}
+}
+#home_post_content .post-entry {border-bottom:dashed 1px #cccccc;}
+#home_post_content .avia_textblock p {margin-bottom:0px;}
+#home_post_content .template-blog article .entry-content-wrapper {background-color:#fff !important; border:none;}
+#home_post_content .template-blog article .entry-content-wrapper .entry-content-header {border:none;}
+#home_post_content .template-blog article .entry-content-wrapper .entry-content {padding:0px;}
+#home_post_content .template-blog article .rounded-container {display:none;}
+#home_post_content .template-blog article .post-meta-infos {display:none;}
+#home_post_content .template-blog article .post-title {padding:0px !important; text-align:left !important;}
+#home_post_content .template-blog article .post-title a {font-size:16px;font-weight:normal;}
+#home_post_content .template-blog article .post-title a:hover {text-decoration:underline;}
+#home_post_content .entry-content p {font-size:12px; margin:0px;}
+#home_post_content .flex_cell .flex_column {height:50%;}
+#home_post_content .flex_cell .flex_column:first-child {margin-bottom:20px;}
+#home_post_content .avia_image {width:100% !important;}
+#home_post_content hr {margin:0px;}
+
+#home_slider_content .av_textblock_section:first-child {background:url('images/jia.svg') 35px center no-repeat;}
+
+/** Photo Page **/
+#tas_image_masonry .av-masonry-container {background-color:#fff !important;}
+
+/** Link Page **/
+.china-title {font-size:16px; color:#fff; background-color:#d9262f; padding: 5px 70px 5px 5px; font-weight:bold;}
+.oz-title {font-size:16px; color:#fff; background-color:#d9262f; padding: 5px 40px 5px 5px; font-weight:bold;}
+.link-title {font-size:16px;}
+#assess-link a {text-decoration:underline;}
+
+/** Tas News Page **/
+.widget_jal_widget {text-align:right;}
+.widget_jal_widget .widgettitle {display:none;}
+.widget_jal_widget ul {list-style-type:none; text-align:left;}
+.widget_jal_widget ul li {padding-left:10px;}
+.widget_jal_widget > ul > li {background:#f7f7f7; border-top:solid 1px #d9262f; border-bottom:solid 1px #f7f7f7; padding-top:5px; padding-bottom:5px;}
+
+.widget_jal_widget > ul > li > ul > li{padding-top:10px; padding-bottom:5px; border-bottom:solid 1px #cccccc;}
+#jal_widget-2 {padding:0px;}
+#jal_widget-2  .jaw_widget > li {margin:0px;}
+
+#tas_news_block .template-blog .blog-meta {display:none !important;}
+#tas_news_block .template-blog article {margin-bottom:20px;}
+#tas_news_block .template-blog .post .entry-content-wrapper {margin:0px !important; max-width:100% !important;}
+#tas_news_block .template-blog .post .entry-content-wrapper > * {margin:0px !important; max-width:100% !important;}
+#tas_news_block .template-blog .post-title {padding:10px 30px !important; font-size:16px !important;}
+#tas_news_block .template-blog .post-meta-infos {text-align:left !important;}
+#tas_news_block .template-blog .entry-content p {font-size:14px;}
+
+
+/** Edu Page **/
+#tas_edu_block_1 .single_toggle .toggler {background:#f7f7f7; border:none;}
+#tas_edu_block_1 .single_toggle .toggler:hover {background:#f7f7f7 !important;}
+#tas_edu_block_1 .single_toggle .toggle_content {background:#f7f7f7 !important; border:none !important; padding-top:0px;}
+#tas_edu_block_1 .single_toggle .toggle_content:hover {background:#f7f7f7 !important;}
+#tas_edu_block_1 {border:solid 1px #cccccc; margin-top:20px; margin-bottom:20px;}
+.edu-title {border-bottom:dashed 1px #cccccc; margin:0px; padding-top:10px; padding-bottom:10px; padding-left:30px;}
+
+#tas_edu_block_1 .togglecontainer {margin-top:10px;}
+
+
+/** Archive Page **/
+.template-blog {padding:0px;}
+.template-blog .content {padding:0px; margin:0px 0px 20px 30px;}
+.multi-big .post_author_timeline, .single-small .post_author_timeline {border-right:0px;}
+.template-blog .blog-meta {display:none;}
+.template-blog .category-term-description {display:none;}
+.template-blog article .entry-content-wrapper {background:#f7f7f7; margin-bottom:20px; border:solid 1px #cccccc; padding:0px;}
+.template-blog article .entry-content-wrapper .entry-content-header {border-bottom:dashed 1px #cccccc; }
+.template-blog article .entry-content-wrapper .entry-content-header .entry-title {font-weight:normal; font-size:18px; float:left; padding-left:30px; padding-top:10px; padding-right:20px;}
+.template-blog article .entry-content-wrapper .entry-content-header .post-meta-infos {padding-top:20px;}
+.template-blog article .entry-content-wrapper .entry-content {clear:both; padding:0px 20px;}
+
+
 /*________Footer Style________*/
 #footer {
 	padding-top:50px;
@@ -54,6 +136,7 @@ Template: enfold
 	position:relative;
 	top:-11px;
 }
+
 
 /*_________Other__________*/
 /** Search Form **/
@@ -71,8 +154,20 @@ box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
 
 #searchform #searchsubmit{background-color:transparent;color:#000; height:24px; line-height:24px; font-size:12px; -webkit-border-top-right-radius: 24px; -moz-border-top-right-radius: 24px; border-top-right-radius: 24px; -webkit-border-bottom-right-radius: 24px; -moz-border-bottom-right-radius: 24px; border-bottom-right-radius: 24px;}
 
-/*________General Style________*/
+/** Page title **/
+#page_title_line #center-line {background:url("images/line_back.svg") left center repeat-x !important; font-size:18px; text-align:center;}
+#page_title_line #center-line span{background: #fff !important; font-weight:bold; padding-left:20px;}
 
+/** Theme adjust **/
+.sidebar_left .content {border-left:none;}
+#top #main .sidebar_left .sidebar {border-right:none;}
+.sidebar {padding-top:0px;}
+.sidebar_left .inner_sidebar {margin-right:0px;}
+
+/** layerslider **/
+#layerslider_archive .ls-inner .ls-slide img {margin:0px !important; width:1200px !important;}
+
+/*________General Style________*/
 /* Font style */
 .text-center {text-align:center;}
 
@@ -82,7 +177,12 @@ box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
 .text-size-18 {font-size:18px;}
 .text-size-23 {font-size:23px;}
 
+/* Resize */
 .image-half-size {width:50%;	height:50%;}
 
 .no-margin {margin:0px;}
 .no-padding {padding:0px;}
+
+#empty-column-50 {height:50px;}
+
+.background-red {background:#d9262f;padding:5px;}

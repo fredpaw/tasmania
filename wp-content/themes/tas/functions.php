@@ -17,7 +17,7 @@ class footerColumn1 extends WP_Widget {
 	function widget() {
 		?>
 		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/mianzeshengming.svg" /></p>
-		<p class="text-size-18 text-center">免责声明</p>
+		<p class="text-size-18 text-center"><a href="#">免责声明</a></p>
 		<?php
 	}
 }
@@ -29,8 +29,8 @@ class footerColumn2 extends WP_Widget {
 	
 	function widget() {
 		?>
-		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/zhongyaolianjie.svg" /></p>
-		<p class="text-size-18 text-center">重要链接</p>
+		<p class="text-center"><a href="<?php bloginfo('url')?>/links/"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/zhongyaolianjie.svg" /></a></p>
+		<p class="text-size-18 text-center"><a href="<?php bloginfo('url')?>/links/">重要链接</a></p>
 		<?php
 	}
 }
@@ -43,7 +43,7 @@ class footerColumn3 extends WP_Widget {
 	function widget() {
 		?>
 		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/wangzhanditu.svg" /></p>
-		<p class="text-size-18 text-center">网站地图</p>
+		<p class="text-size-18 text-center"><a href="#">网站地图</a></p>
 		<?php
 	}
 }
@@ -56,7 +56,7 @@ class footerColumn4 extends WP_Widget {
 	function widget() {
 		?>
 		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/shangcheng.svg" /></p>
-		<p class="text-size-18 text-center">塔斯马尼亚商城</p>
+		<p class="text-size-18 text-center"><a href="#">塔斯马尼亚商城</a></p>
 		<?php
 	}
 }
@@ -69,7 +69,7 @@ class footerColumn5 extends WP_Widget {
 	function widget() {
 		?>
 		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/weishangjiameng.svg" /></p>
-		<p class="text-size-18 text-center">微商加盟</p>
+		<p class="text-size-18 text-center"><a href="#">微商加盟</a></p>
 		<?php
 	}
 }

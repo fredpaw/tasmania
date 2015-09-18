@@ -191,5 +191,17 @@
 <a href='#top' title='<?php _e('Scroll to top','avia_framework'); ?>' id='scroll-top-link' <?php echo av_icon_string( 'scrolltop' ); ?>><span class="avia_hidden_link_text"><?php _e('Scroll to top','avia_framework'); ?></span></a>
 
 <div id="fb-root"></div>
+<div id="side-ad">
+	<div id="side-qr">
+		<div class="side-qr"><img src="<?php bloginfo('template_url');?>/images/tas_qr.jpg"/></div>
+		<div class="side-qr"><p>扫描二维码</p><p>加入微信平台</p></div>
+	</div>
+	<div id="side-block">
+		<div class="side-block"><a href="#"><img src="<?php bloginfo('template_url');?>/images/gouwuche.svg"/></a></div>
+		<div class="side-block"><a href="#"><img src="<?php bloginfo('template_url');?>/images/shoucangjia.svg"/></a></div>
+		<div class="side-block"><a href="#"><img src="<?php bloginfo('template_url');?>/images/gerenzhongxin.svg"/></a></div>
+		<div class="side-block"><a href="#"><img src="<?php bloginfo('template_url');?>/images/xiaoxi.svg"/></a></div>
+	</div>
+</div>
 </body>
 </html>

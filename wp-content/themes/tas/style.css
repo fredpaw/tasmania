@@ -72,7 +72,7 @@ Template: enfold
 #home_post_content .avia_image {width:100% !important;}
 #home_post_content hr {margin:0px;}
 
-#home_slider_content .av_textblock_section:first-child {background:url('images/jia.svg') 35px center no-repeat;}
+#home_slider_content .av_textblock_section:first-child {background:url('images/jia.svg') 10% center no-repeat;}
 
 /** Photo Page **/
 #tas_image_masonry .av-masonry-container {background-color:#fff !important;}
@@ -166,6 +166,21 @@ box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
 
 /** layerslider **/
 #layerslider_archive .ls-inner .ls-slide img {margin:0px !important; width:1200px !important;}
+
+/** Side Ad **/
+#side-ad {position:fixed; right:10px; bottom:60%; width:145px; padding:0px; margin:0px; z-index:999;}
+@media only screen and (max-width:767px) {
+	#side-ad {display:none;}
+}
+#side-ad #side-qr {width:100px; padding:0px; margin:0px; float:left; background:#f7f7f7;}
+#side-ad #side-qr img {width:100%;}
+#side-ad #side-qr .side-qr:last-child {text-align:center; font-size:12px; padding: 10px 0px;}
+#side-ad #side-qr .side-qr:last-child  p {margin:0px;}
+#side-ad #side-block {width:40px; padding:0px; margin:0px; margin-left:5px; float:left;}
+#side-ad #side-block .side-block {background:#4b4b4b; width:40px; height:40px; line-height:40px; text-align:center; border-bottom:solid 1px #999999;}
+#side-ad #side-block .side-block:last-child {border-bottom:0px;}
+
+
 
 /*________General Style________*/
 /* Font style */

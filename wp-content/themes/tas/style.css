@@ -126,6 +126,13 @@ Template: enfold
 .template-blog article .entry-content-wrapper .entry-content-header .post-meta-infos {padding-top:20px;}
 .template-blog article .entry-content-wrapper .entry-content {clear:both; padding:0px 20px;}
 
+/** Content Page **/
+.subject-title {margin:10px 0px 0px 0px; border-bottom:dashed 1px #fff; padding-top:10px; background:url('images/title_mark.jpg') left center no-repeat;}
+.subject-title h3 {margin-left:10px; font-weight:normal; font-size:18px; color:#666666;}
+#content_block .av_one_fourth { -webkit-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+-moz-box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);
+box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.25);}
+
 
 /*________Footer Style________*/
 #footer {
@@ -194,6 +201,8 @@ box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
 .text-size-18 {font-size:18px;}
 .text-size-23 {font-size:23px;}
 
+.avia_textblock a {color:#c9161c !important;}
+
 /* Resize */
 .image-half-size {width:50%;	height:50%;}
 
@@ -201,5 +210,11 @@ box-shadow: inset 0px 0px 5px 0px rgba(51,51,51,0.5);}
 .no-padding {padding:0px;}
 
 #empty-column-50 {height:50px;}
+
+div .av_one_fourth {
+	margin-left:3%;
+	width:22.75%;
+	margin-left:3%;
+}
 
 .background-red {background:#d9262f;padding:5px;}

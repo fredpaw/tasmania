@@ -7,12 +7,14 @@ $avia_pages = array(
 	array( 'slug' => 'avia', 		'parent'=>'avia', 'icon'=>"hammer_screwdriver.png" , 	'title' =>  __('Theme Options', 'avia_framework')),
 	array( 'slug' => 'layout', 		'parent'=>'avia', 'icon'=>"application_side_expand.png",'title' =>  __('General Layout', 'avia_framework')),
 	array( 'slug' => 'styling', 	'parent'=>'avia', 'icon'=>"palette.png", 				'title' =>  __('General Styling', 'avia_framework')),
-	array( 'slug' => 'customize', 	'parent'=>'avia', 'icon'=>"wand.png", 					'title' =>  __('Advanced Styling', 'avia_framework')),
+	array( 'slug' => 'customizer', 	'parent'=>'avia', 'icon'=>"wand.png", 					'title' =>  __('Advanced Styling', 'avia_framework')),
 	array( 'slug' => 'header', 		'parent'=>'avia', 'icon'=>"layout_select.png", 			'title' =>  __('Header', 'avia_framework')),
 	array( 'slug' => 'sidebars', 	'parent'=>'avia', 'icon'=>"layout_select_sidebar.png", 	'title' =>  __('Sidebar Settings', 'avia_framework')),
 	array( 'slug' => 'footer', 		'parent'=>'avia', 'icon'=>"layout_select_footer.png", 	'title' =>  __('Footer', 'avia_framework')),
 	array( 'slug' => 'blog', 		'parent'=>'avia', 'icon'=>"blog.png", 					'title' =>  __('Blog Layout', 'avia_framework')),
 	array( 'slug' => 'social', 		'parent'=>'avia', 'icon'=>"user.png", 					'title' =>  __('Social Profiles', 'avia_framework')),
+	array( 'slug' => 'newsletter', 	'parent'=>'avia', 'icon'=>"blog.png", 					'title' =>  __('Newsletter', 'avia_framework')),
+	array( 'slug' => 'google', 		'parent'=>'avia', 'icon'=>"map.png", 					'title' =>  __('Google Services', 'avia_framework')),
 );
 
 if(class_exists( 'woocommerce' ))
@@ -39,6 +41,66 @@ include('register-backend-google-fonts.php');
 //required for the advanced styling wizard
 include('register-backend-advanced-styles.php');
 
+
+/*google*/
+
+
+
+$avia_elements[] =	array(
+					"slug"	=> "google",
+					"name" 	=> __("Google Analytics Tracking Code", 'avia_framework'),
+					"desc" 	=> __("Enter your Google analytics tracking Code here. It will automatically be added so google can track your visitors behavior.", 'avia_framework'),
+					"id" 	=> "analytics",
+					"type" 	=> "textarea"
+					);
+
+$avia_elements[] = array("slug"	=> "google", "type" => "visual_group_start", "id" => "avia_google_maps_group", "nodescription" => true);	
+
+
+$google_link = "https://console.developers.google.com/flows/enableapi?apiid=maps_backend,geocoding_backend,directions_backend,distance_matrix_backend,elevation_backend,places_backend&keyType=CLIENT_SIDE&reusekey=true";
+$tutorial_link = "http://www.kriesi.at/documentation/enfold/how-to-register-a-google-maps-api-key/";
+
+
+$avia_elements[] = array(	"name" => 	__("Google Maps", 'avia_framework'),
+								"desc" => __("Google recently changed the way their map service works. New domains which want to use Google Maps need to register an API key for their website. Older domains should  work fine without this API key. If the google map elements of this theme do not work properly you need to register a new API key.", 'avia_framework')."<br><a href='{$google_link}' target='_blank'>".__("Register an API Key", 'avia_framework')."</a> | <a target='_blank' href='{$tutorial_link}'>".__("Tutorial: How to create an API key", 'avia_framework')."</a>",
+								"std" => "",
+								"slug"	=> "google",
+								"type" => "heading",
+								"nodescription"=>true);
+
+
+$avia_elements[] =	array(
+					"slug"	=> "google",
+					"name" 	=> __("Google Maps API Key", 'avia_framework'),
+					"desc" 	=> __("Enter a valid Google Maps API Key to use all map related theme functions.", 'avia_framework'),
+					"id" 	=> "gmap_api",
+					"type" 	=> "text",
+					"std" 	=> ""
+					);
+
+$avia_elements[] = array("slug"	=> "google", "type" => "visual_group_end", "id" => "avia_google_maps_group_end", "nodescription" => true);
+
+/*newsletter*/
+
+$avia_elements[] = array(	"name" => 	__("Newsletter via Mailchimp", 'avia_framework'),
+								"desc" => __("Mailchimp allows you to easily use newsletter functionality with this theme. In order to use the Newsletter features you need to create a Mailchimp account and enter your API key into the field below.", 'avia_framework')."<br/><br/><a href='https://admin.mailchimp.com/account/api' target='_blank'>".__("You can find your API key here", 'avia_framework')."</a>",
+								"std" => "",
+								"slug"	=> "newsletter",
+								"type" => "heading",
+								"nodescription"=>true);
+
+$avia_elements[] =	array(	
+						"slug"	=> "newsletter",
+						"std"	=> "",
+						"name" 	=> __("Enter a valid Mailchimp API Key to use all newsletter related theme functions", 'avia_framework'),
+						"help" 	=> "",
+						"desc" 	=> false,
+						"id" 	=> "mailchimp_api",
+						"type" 	=> "verification_field",
+						"ajax"  => "av_mailchimp_check_ajax",
+						"button-label" => __('Check API Key', 'avia_framework'),
+						"button-relabel" => __('Check Key again & renew Lists', 'avia_framework')
+						);	
 
 
 /*shop*/
@@ -68,6 +130,7 @@ $avia_elements[] =	array(
 					"subtype" => array( __('Default', 'avia_framework') =>'',
 										__('Default without buttons', 'avia_framework') =>'no_button',
 										__('Minimal (no borders or buttons)', 'avia_framework') =>'minimal',
+										__('Minimal Overlay with centered text', 'avia_framework') =>'minimal-overlay',
 										));
 
 $avia_elements[] =	array(
@@ -189,7 +252,8 @@ $avia_elements[] =	array(
 							box-sizing: border-box;
 						}
 						#avia_default_layout_target .avia_target_inside{min-height: 300px;}
-						#boxed .avprev-layout-container{ padding:23px; border:1px solid #e1e1e1; background-color: #555;}
+						#boxed .avprev-layout-container{ padding:0 23px; border:1px solid #e1e1e1; background-color: #555;}
+						#av-framed-box .avprev-layout-container{ padding:23px; border:1px solid #e1e1e1; background-color: #555;}
 						#boxed .avprev-layout-container-inner{border:none; overflow: hidden;}
 						.avprev-layout-container-inner{border: 1px solid #e1e1e1; background:#fff;}
 						.avprev-layout-content-container{overflow:hidden; margin:0 auto; position:relative;}
@@ -287,7 +351,35 @@ $avia_elements[] =	array(
 					"class" => "av_2columns av_col_1",
 					"no_first"=>true,
 					"target" => array("default_slideshow_target, #avia_default_layout_target::.avia_control_container::set_id"),
-					"subtype" => array(__('Stretched layout', 'avia_framework') => 'stretched', __('Boxed Layout', 'avia_framework') => 'boxed'));
+					"subtype" => array(	__('Stretched layout'	, 'avia_framework') => 'stretched', 
+										__('Boxed Layout'		, 'avia_framework') => 'boxed',
+										__('Fixed Frame'		, 'avia_framework') => 'av-framed-box'
+										)
+										);
+
+$numbers = array();
+for($i = 1; $i <= 75; $i++)
+{
+	$numbers[$i."px"] = $i;
+}
+
+$avia_elements[] =	array(
+					"slug"	=> "layout",
+					"name" 	=> __("Frame Width", 'avia_framework'),
+					"desc" 	=> __("Modify the frame color by changing the Body Background in",'avia_framework').
+							" <a href='#goto_styling'>".
+							__("General Styling",'avia_framework').
+							"</a>",
+					"id" 	=> "color-frame_width",
+					"type" 	=> "select",
+					"std" 	=> "20",
+					"class" => "av_2columns av_col_2",
+					"required" => array('color-body_style','{contains}framed'),
+					"no_first"=>true,
+					"subtype" => $numbers
+					);
+
+
 
 
 $avia_elements[] =	array(
@@ -619,6 +711,49 @@ $avia_elements[] = array(	"slug"	=> "avia", "type" => "visual_group_end", "id" =
 
 
 
+
+
+
+
+$avia_elements[] = array(
+		"name" 	=> __("Lightbox Modal Window", 'avia_framework'),
+		"desc" 	=> __("Check to enable the default lightbox that opens once you click a link to an image. Uncheck only if you want to use your own modal window plugin", 'avia_framework'),
+		"id" 	=> "lightbox_active",
+		"type" 	=> "checkbox",
+		"std"	=> "true",
+		"slug"	=> "avia");	
+		
+
+$loack_alb = "checkbox";
+
+if(!current_user_can('switch_themes'))
+{
+	$loack_alb = "hidden";
+}
+
+$avia_elements[] = array(	"slug"	=> "avia", "type" => "visual_group_start", "id" => "avia_lock_alb", "nodescription" => true);
+
+$avia_elements[] = array(
+		"name" 	=> __("Lock advanced layout builder", 'avia_framework'),
+		"desc" 	=> __("This removes the ability to move or delete existing template builder elements, or add new ones, for everyone who is not an administrator. The content of an existing element can still be changed by everyone who can edit that entry.", 'avia_framework'),
+		"id" 	=> "lock_alb",
+		"type" 	=> $loack_alb,
+		"std"	=> "",
+		"slug"	=> "avia");	
+
+
+$avia_elements[] = array(
+		"name" 	=> __("Lock advanced layout builder for admins as well?", 'avia_framework'),
+		"desc" 	=> __("This will lock the elements for all administrators including you, to prevent accidental changing of a page layout. In order to change a page layout later, you will need to uncheck this option first", 'avia_framework'),
+		"id" 	=> "lock_alb_for_admins",
+		"type" 	=> $loack_alb,
+		"std"	=> "",
+		"required" => array('lock_alb','{true}'),
+		"slug"	=> "avia");	
+
+$avia_elements[] = array(	"slug"	=> "avia", "type" => "visual_group_end", "id" => "avia_lock_alb_close", "nodescription" => true);		
+
+
 $avia_elements[] =	array(
 					"slug"	=> "avia",
 					"name" 	=> __("Websafe fonts fallback for Windows", 'avia_framework'),
@@ -643,27 +778,8 @@ $avia_elements[] =	array(
 					"subtype" => array( __('Not activated', 'avia_framework') =>'inactive',
 										__('Activated', 'avia_framework') =>'',
 										));
+	
 
-
-
-$avia_elements[] = array(
-		"name" 	=> __("Lightbox Modal Window", 'avia_framework'),
-		"desc" 	=> __("Check to enable the default lightbox that opens once you click a link to an image. Uncheck only if you want to use your own modal window plugin", 'avia_framework'),
-		"id" 	=> "lightbox_active",
-		"type" 	=> "checkbox",
-		"std"	=> "true",
-		"slug"	=> "avia");	
-		
-		
-		
-
-$avia_elements[] =	array(
-					"slug"	=> "avia",
-					"name" 	=> __("Google Analytics Tracking Code", 'avia_framework'),
-					"desc" 	=> __("Enter your Google analytics tracking Code here. It will automatically be added so google can track your visitors behavior.", 'avia_framework'),
-					"id" 	=> "analytics",
-					"type" 	=> "textarea"
-					);
 
 
 
@@ -684,7 +800,7 @@ $avia_elements[] =	array(
 
 
 $avia_elements[] =	array(
-					"slug"		=> "customize",
+					"slug"		=> "customizer",
 					"name" 		=> __("Here you can select a number of different elements and change their default styling", 'avia_framework'),
 					"desc" 		=> __("If a value is left empty or set to default then it will not be changed from the value defined in your CSS files", 'avia_framework')."<br/><br/><strong>".
 									__("Attention", 'avia_framework').": </strong>".
@@ -711,14 +827,15 @@ $avia_elements[] =	array(
 					"std" 	=> "
 					<style type='text/css'>
 
-						#boxed .live_bg_wrap{ padding:23px;   border:1px solid #e1e1e1; background-position: top center;}
+						#boxed .live_bg_wrap{ padding:0 23px;   border:1px solid #e1e1e1; background-position: top center;}
+						#av-framed-box .live_bg_wrap{ padding:23px;   border:1px solid #e1e1e1; background-position: top center;}
 						.live_bg_small{font-size:10px; color:#999;}
 						.live_bg_wrap{ padding: 0; background:#f8f8f8; overflow:hidden; background-position: top center;}
 						.live_bg_wrap div{overflow:hidden; position:relative;}
 						.live_bg_wrap h3{margin: 0 0 5px 0 ; color:inherit;}
 						.live_bg_wrap .main_h3{font-weight:bold; font-size:17px;  }
 						.border{border:1px solid; border-bottom-style:none; border-bottom-width:0; padding:13px; width:562px;}
-						#boxed .border{  width:514px;}
+						#boxed .border, #av-framed-box .border{  width:514px;}
 
 						.live_header_color {position: relative;width: 100%;left: }
 						.bg2{border:1px solid; margin:4px; display:block; float:right; width:220px; padding:5px; max-width:80%}
@@ -730,11 +847,12 @@ $avia_elements[] =	array(
 						#avia_preview .webfont_google_webfont{  font-weight:normal; }
 						.webfont_default_font{  font-weight:normal; font-size:13px; line-height:1.7em;}
 
-						div .link_controller_list a{ width:95px; font-size:11px;}
+						div .link_controller_list a{ width:81px; font-size:11px;}
 						.avia_half{width: 267px; float:left; height:183px;}
 						.avia_half .bg2{float:none; margin-left:0;}
 						.avia_half_2{border-left:none; padding-left:14px;}
-						#boxed  .avia_half { width: 243px; }
+						#boxed .avia_half, #av-framed-box .avia_half { width: 243px; }
+						#av-framed-box #header_left  .avia_half { width: 179px; height:250px;}
 						.live-slideshow_color{text-align:center;}
 						.text_small_outside{position:relative; top:-15px; display:block; left: 10px;}
 						
@@ -1030,8 +1148,8 @@ foreach($colorsets as $set_key => $set_value)
 
 
 $avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_start", "id" => "avia_tab54", "nodescription" => true, 'class'=>'avia_tab avia_tab2','name'=>__('Body background', 'avia_framework'),
-							"required" => array("color-body_style",'boxed'),
-							"inactive"	=> __("These options are only available if you select the boxed layout. Your currently have the stretched layout selected", 'avia_framework'). "<br/><br/>".
+							"required" => array("color-body_style",'{contains}box'),
+							"inactive"	=> __("These options are only available if you select the 'boxed' or 'framed' layout. Your currently have a different layout selected", 'avia_framework'). "<br/><br/>".
 							__("You can change that setting",'avia_framework').
 							" <a href='#goto_layout'>".
 							__("at General Layout",'avia_framework').
@@ -1065,6 +1183,7 @@ $avia_elements[] =	array(
 						"target" => array("default_slideshow_target::.live_bg_wrap::background-image"),
 						"folder" => "images/background-images/",
 						"folderlabel" => "",
+						"required" => array("color-body_style",'boxed'),
 						"group" => "Select predefined pattern",
 						
 						);
@@ -1144,7 +1263,12 @@ $avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_end", "id
 
 
 
-$avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_start", "id" => "avia_tab5", "nodescription" => true, 'class'=>'avia_tab avia_tab2','name'=>__('Fonts', 'avia_framework'));
+
+
+
+
+
+$avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_start", "id" => "avia_tab6", "nodescription" => true, 'class'=>'avia_tab avia_tab2','name'=>__('Fonts', 'avia_framework'));
 
 
 $avia_elements[] =		array(	"name" 	=> __("Heading Font", 'avia_framework'),
@@ -1173,7 +1297,6 @@ $avia_elements[] =	array(	"name" 	=> __("Defines the Font for your body text", '
 				            					'Verdana'=>'Verdana-websave',
 				            					'Helvetica'=>'Helvetica-websave',
 				            					'Helvetica Neue'=>'Helvetica-Neue,Helvetica-websave',
-												'Microsoft Yahei'=>'Microsoft-yahei-websave',
 				            					'Lucida'=>'"Lucida-Sans",-"Lucida-Grande",-"Lucida-Sans-Unicode-websave"'),
 				            					
 				            					__('Google fonts', 'avia_framework') => array(
@@ -1218,7 +1341,7 @@ $avia_elements[] =	array(
 										));
 
 
-$avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_end", "id" => "avia_tabwe5_end", "nodescription" => true);
+$avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_end", "id" => "avia_tabwe6_end", "nodescription" => true);
 
 
 $avia_elements[] = array(	"slug"	=> "styling", "type" => "visual_group_end", "id" => "avia_tab_container_end", "nodescription" => true);
@@ -1240,6 +1363,10 @@ $avia_elements[] =	array(
 
 
 /*Sidebar*/
+
+
+
+
 $avia_elements[] =	array(
 					"slug"	=> "sidebars",
 					"name" 	=> __("Sidebar on Archive Pages", 'avia_framework'),
@@ -1329,7 +1456,17 @@ $avia_elements[] =	array(
 					"subtype" => array( __('Display sidebar navigation', 'avia_framework') =>'true',
 										__("Don't display Sidebar navigation", 'avia_framework') => ""
 										));
-
+$avia_elements[] =	array(
+					"slug"	=> "sidebars",
+					"name" 	=> __("Sidebar Separator Styling", 'avia_framework'),
+					"desc" 	=> __("Do you want to separate the sidebar from your main content with a border?", 'avia_framework'),
+					"id" 	=> "sidebar_styling",
+					"type" 	=> "select",
+					"std" 	=> "",
+					"no_first"=>true,
+					"subtype" => array( __('With Border', 'avia_framework') =>'',
+										__('No Border', 'avia_framework') =>'no_sidebar_border',
+										));
 
 $avia_elements[] =	array(	"name" => __("Create new Sidebar Widget Areas", 'avia_framework'),
 							"desc" => __("The theme supports the creation of custom widget areas. Simply open your", 'avia_framework') . " <a target='_blank' href='".admin_url('widgets.php')."'>".__('Widgets Page', 'avia_framework')."</a> ". 
@@ -1392,8 +1529,13 @@ $avia_elements[] =	array(
 					.menu_left #pr-menu{float:left}
 					#avia_options_page .bottom_nav_header#pr-main-area{line-height: 1em;}
 					.bottom_nav_header #pr-menu{float:none; clear:both; line-height:36px; }
+					.top_nav_header div#pr-menu { position: absolute; top: -1px; width: 100%; left: 0; }
+					.top_nav_header#pr-main-area{margin-top:40px;}
 					.bottom_nav_header.logo_right #pr-menu{text-align:right;}
 					.bottom_nav_header #pr-menu:before { content: ''; border-top: 1px solid #e1e1e1; width: 150%; position:absolute; height: 1px; left: -50px;}
+					.top_nav_header #pr-menu:before{ top: 36px; }
+					.minimal_header .top_nav_header #pr-menu:before{opacity:0;}
+					.minimal_header_shadow .top_nav_header #pr-menu:before{opacity:1; box-shadow: 0 1px 3px 0px rgba(0,0,0,0.1); }
 					
 					
 					#pr-menu-2nd{height: 17px; color:#aaa; border:1px solid #e1e1e1; padding:5px 45px; overflow:hidden; background-color:#f8f8f8; border-bottom:none; display:none; font-size:11px;}
@@ -1497,6 +1639,7 @@ $avia_elements[] =	array(
 										__('Logo left, Menu below', 'avia_framework') 	=>'logo_left bottom_nav_header menu_left',
 										__('Logo right, Menu below', 'avia_framework') 	=>'logo_right bottom_nav_header menu_center',
 										__('Logo center, Menu below', 'avia_framework') 	=>'logo_center bottom_nav_header menu_right',
+										__('Logo center, Menu above', 'avia_framework') 	=>'logo_center bottom_nav_header top_nav_header menu_center',
 										));
 										
 $avia_elements[] =	array(
@@ -1824,7 +1967,7 @@ $avia_elements[] =	array(
 									'Vimeo' 	=> 'vimeo',
 									'Vk' 		=> 'vk',
 									'Xing' 		=> 'xing',
-									'Youtube'   => 'youtube',
+									'YouTube'   => 'youtube',
 									__('Special: RSS (add RSS URL, leave blank if you want to use default WordPress RSS feed)', 'avia_framework') => 'rss',
 									__('Special: Email Icon (add your own URL to link to a contact form)', 'avia_framework') => 'mail',
 
@@ -1906,11 +2049,25 @@ $avia_elements[] = array(
 
 /*blog settings*/
 
+$avia_elements[] =	array(
+					"slug"	=> "blog",
+					"name" 	=> __("Blog Styling", 'avia_framework' ),
+					"desc" 	=> __("Choose the blog styling here.", 'avia_framework' ),
+					"id" 	=> "blog_global_style",
+					"type" 	=> "select",
+					"std" 	=> "",
+					"no_first"=>true,
+					"subtype" => array( 
+									__( 'Default (Business)', 'avia_framework' ) =>'',
+									__( 'Elegant', 'avia_framework' ) =>'elegant-blog',
+										));
+
+
 
 
 $avia_elements[] =	array(
 					"slug"	=> "blog",
-					"name" 	=> __("Blog Style", 'avia_framework' ),
+					"name" 	=> __("Blog Layout", 'avia_framework' ),
 					"desc" 	=> __("Choose the default blog layout here.", 'avia_framework' )."<br/><br/>".__("You can either chose a predefined layout or build your own blog layout with the advanced layout editor", 'avia_framework' ),
 					"id" 	=> "blog_style",
 					"type" 	=> "select",
@@ -2214,22 +2371,6 @@ $avia_elements[] =	array(
 					"image"	=> "includes/admin/demo_files/demo_images/startup.jpg"
 					);
 
-$avia_elements[] =	array(
-					"slug"	=> "demo",
-					"name" 	=> __("Import: Shop Demo", 'avia_framework'),
-					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-shop/' target='_blank'>{$online_demo}</a></strong></p>"
-								."<h4 class='av-before-plugins'>".__("Required Plugins:", 'avia_framework')."</h4><ul>"
-								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a> ".__("(needs to be active to install the demo)", 'avia_framework')."</li>"
-								."</ul>"
-								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
-								."<li>".__("All", 'avia_framework')."</li>"
-								."</ul>",
-					'files' => "/includes/admin/demo_files/shop",
-					"id" 	=> "import",
-					"type" 	=> "import",
-					"exists" => array("WooCommerce",__("The WooCommerce Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
-					"image"	=> "includes/admin/demo_files/demo_images/shop.jpg"
-					);
 
 $avia_elements[] =	array(
 					"slug"	=> "demo",
@@ -2248,10 +2389,28 @@ $avia_elements[] =	array(
 					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Minimal Portfolio Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-minimal-portfolio/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/portfolio-minimal",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/portfolio-minimal.jpg"
+					);
+
+
+
 
 $avia_elements[] =	array(
 					"slug"	=> "demo",
-					"name" 	=> __("Import: Photography Demo", 'avia_framework'),
+					"name" 	=> __("Import: Photography Portfolio Demo", 'avia_framework'),
 					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-photography/' target='_blank'>{$online_demo}</a></strong></p>"
 								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
 								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a> ".__("(if you want to sell photos online)", 'avia_framework')."</li>"
@@ -2264,6 +2423,29 @@ $avia_elements[] =	array(
 					"type" 	=> "import",
  					"image"	=> "includes/admin/demo_files/demo_images/photography.jpg"
 					);
+
+
+
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Shop Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-shop/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Required Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a> ".__("(needs to be active to install the demo)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/shop",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"exists" => array("WooCommerce",__("The WooCommerce Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
+					"image"	=> "includes/admin/demo_files/demo_images/shop.jpg"
+					);
+
+
+
+
 
 
 $avia_elements[] =	array(
@@ -2314,6 +2496,23 @@ $avia_elements[] =	array(
  					"image"	=> "includes/admin/demo_files/demo_images/wedding.jpg"
 					);		
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Construction Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-construction/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/construction",
+					"id" 	=> "import",
+					"type" 	=> "import",
+ 					"image"	=> "includes/admin/demo_files/demo_images/construction.jpg"
+					);	
+
+
 
 $avia_elements[] =	array(
 					"slug"	=> "demo",
@@ -2331,12 +2530,11 @@ $avia_elements[] =	array(
 					'files' => "/includes/admin/demo_files/church",
 					"id" 	=> "import",
 					"type" 	=> "import",
-					"exists" => array("TribeEvents",__("The Events Calendar Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
+					"exists" => array("Tribe__Events__Main",__("The Events Calendar Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
 					"image"	=> "includes/admin/demo_files/demo_images/church.jpg"
 					);
 					
-					
-		
+
 $avia_elements[] =	array(
 					"slug"	=> "demo",
 					"name" 	=> __("Import: Simple Blog Demo", 'avia_framework'),
@@ -2351,6 +2549,24 @@ $avia_elements[] =	array(
 					"id" 	=> "import",
 					"type" 	=> "import",
  					"image"	=> "includes/admin/demo_files/demo_images/blog.jpg"
+					);
+
+					
+		
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Lifestyle Blog Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-lifestyle-blog/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/blog-lifestyle",
+					"id" 	=> "import",
+					"type" 	=> "import",
+ 					"image"	=> "includes/admin/demo_files/demo_images/blog-lifestyle.jpg"
 					);
 
 
@@ -2371,16 +2587,164 @@ $avia_elements[] =	array(
 					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: 'Landin Page' Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-landing-page/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/landing",
+					"id" 	=> "import",
+					"type" 	=> "import",
+ 					"image"	=> "includes/admin/demo_files/demo_images/landing.jpg"
+					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Travel Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-travel/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Required Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a> ".__("(needs to be active to install the demo)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='https://www.woothemes.com/products/woocommerce-bookings/' target='_blank'>WooCommerce Bookings</a> ".__("(needs to be active to allow date based bookings)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/travel",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"exists" => array("WooCommerce",__("The WooCommerce Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
+					"image"	=> "includes/admin/demo_files/demo_images/travel.jpg"
+					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Hotel Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-hotel/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Required Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a> ".__("(needs to be active to install the demo)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='https://www.woothemes.com/products/woocommerce-bookings/' target='_blank'>WooCommerce Bookings</a> ".__("(needs to be active to allow date based bookings)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/hotel",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"exists" => array("WooCommerce",__("The WooCommerce Plugin is currently not active. Please install and activate it, then reload this page in order to be able to import this demo", 'avia_framework')),
+					"image"	=> "includes/admin/demo_files/demo_images/hotel.jpg"
+					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Spa Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-spa/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li><a href='http://wordpress.org/plugins/woocommerce/' target='_blank'>WooCommerce</a></li>"
+								."<li><a href='https://www.woothemes.com/products/woocommerce-bookings/' target='_blank'>WooCommerce Bookings</a> ".__("(needs to be active to allow date based bookings)", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/spa",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/spa.jpg"
+					);
+
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Consulting Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-consulting/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/consulting",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/consulting.jpg"
+					);
+					
+
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Résumé Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-resume/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/resume",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/resume.jpg"
+					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: GYM Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-gym/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/gym",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/gym.jpg"
+					);
 
 
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: Health Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-health-coach/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/health",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/health.jpg"
+					);
+
+$avia_elements[] =	array(
+					"slug"	=> "demo",
+					"name" 	=> __("Import: App Demo", 'avia_framework'),
+					"desc" 	=> 	 "<p><strong>{$what_get} <a href='http://www.kriesi.at/themes/enfold-app/' target='_blank'>{$online_demo}</a></strong></p>"
+								."<h4 class='av-before-plugins'>".__("Recommended Plugins:", 'avia_framework')."</h4><ul>"
+								."<li>".__("None", 'avia_framework')."</li>"
+								."</ul>"
+								."<h4 class='av-before-plugins'>".__("Demo Images included:", 'avia_framework')."</h4><ul>"
+								."<li>".__("All", 'avia_framework')."</li>"
+								."</ul>",
+					'files' => "/includes/admin/demo_files/app",
+					"id" 	=> "import",
+					"type" 	=> "import",
+					"image"	=> "includes/admin/demo_files/demo_images/app.jpg"
+					);
 
 
 

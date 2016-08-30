@@ -17,22 +17,19 @@
 
 
 /**
- * AVIA COMBO WIDGET
- *
- * Widget that retrieves, stores and displays the number of twitter and rss followers
- *
- * @package AviaFramework
- * @todo replace the widget system with a dynamic one, based on config files for easier widget creation
+ * AVIA FACEBOOK WIDGET
  */
 
 if (!class_exists('avia_fb_likebox'))
 {
 	class avia_fb_likebox extends WP_Widget {
-
-		function avia_fb_likebox() {
+	
+		static $script_loaded = 0;
+	
+		function __construct() {
 			//Constructor
-			$widget_ops = array('classname' => 'avia_fb_likebox', 'description' => 'A widget that displays a facebook Likebox to a facebook page of your choice' );
-			$this->WP_Widget( 'avia_fb_likebox', THEMENAME.' Facebook Likebox', $widget_ops );
+			$widget_ops = array('classname' => 'avia_fb_likebox', 'description' => __('A widget that displays a facebook Likebox to a facebook page of your choice', 'avia_framework') );
+			parent::__construct( 'avia_fb_likebox', THEMENAME.' Facebook Likebox', $widget_ops );
 		}
 
 		function widget($args, $instance)
@@ -41,15 +38,13 @@ if (!class_exists('avia_fb_likebox'))
 
 			extract($args, EXTR_SKIP);
 			if(empty($instance['url'])) return;
-			$url 		= urlencode($instance['url']);
-			$height 	= $instance['height']; 
-			$border 	= $instance['border']; 
-			$profiles 	= 3000; // since the height determines the number of images loaded
+			$url 		= $instance['url'];
+			$title 		= isset($instance['title']) ? $instance['title'] : ""; 
+			$height 	= 151; 
 			$faces 		= "true";
 			$extraClass = "";
 			$style 		= "";
 			
-			if(strpos($height, "%") === false && strpos($height, "px") === false) $height = $height."px";
 			
 			if(strpos($height, "%") !== false)
 			{
@@ -60,10 +55,49 @@ if (!class_exists('avia_fb_likebox'))
 			
 			
 			echo $before_widget;
-			echo "<div class='av_facebook_widget_wrap {$extraClass} av_facebook_widget_wrap_border_{$border}' {$style}>";
-			echo '<iframe class="av_facebook_widget" src="//www.facebook.com/plugins/likebox.php?href='.$url.'&amp;width&amp;height='.$profiles.'&amp;colorscheme=light&amp;show_faces='.$faces.'&amp;header=false&amp;stream=false&amp;show_border=false" scrolling="no" frameborder="0" style="border:none; overflow:hidden; height:'.$height.';" allowTransparency="true"></iframe>';
+			
+			if ( !empty( $title ) ) { echo $before_title . $title . $after_title; };
+			
+			echo "<div class='av_facebook_widget_wrap {$extraClass}' {$style}>";
+			echo '<div class="fb-page" data-width="500" data-href="'.$url.'" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true" data-show-posts="false"><div class="fb-xfbml-parse-ignore"></div></div>';
 			echo "</div>";
 			echo $after_widget;
+			add_action('wp_footer', array( $this,'fb_js' ));
+		}
+		
+		
+		
+		function fb_js()
+		{
+			if ( function_exists('icl_object_id') ) {
+				$locale = ICL_LANGUAGE_NAME_EN;
+				$fbxml = @simplexml_load_file( AVIA_BASE . '/config-wpml/FacebookLocales.xml' );
+				
+				if(is_object($fbxml))
+				{
+					$langcode = array();
+					foreach($fbxml as $loc) {
+						if($loc->englishName == $locale) {
+							$langcode = $loc->codes->code->standard->representation;
+						}
+					}
+				}
+		 	}
+
+			$langcode = function_exists('icl_object_id') && !empty($langcode) ? $langcode : 'en_US';
+
+			if(self::$script_loaded == 1) return;
+			self::$script_loaded = 1;
+
+			echo '
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/'. $langcode .'/sdk.js#xfbml=1&version=v2.7";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, "script", "facebook-jssdk"));</script>';
+
 		}
 
 
@@ -81,33 +115,23 @@ if (!class_exists('avia_fb_likebox'))
 		function form($instance) {
 			//widgetform in backend
 
-			$instance = wp_parse_args( (array) $instance, array('url' => 'https://www.facebook.com/kriesi.at', 'height' => '258px', 'border' => 'yes') );
+			$instance = wp_parse_args( (array) $instance, array('url' => 'https://www.facebook.com/kriesi.at', 'title' => '') );
 			$html = new avia_htmlhelper();
-			$elementCat = array("name" 	=> "",
-								"desc" 	=> "",
-					            "id" 	=> $this->get_field_name('border'),
-					            "type" 	=> "select",
-					            "std"   => strip_tags($instance['border']),
-					            "class" => "",
-					            "no_first" => true,
-					            "subtype" => array('Yes, display border'=>'yes', 'No, do not display border'=>'no'));
+			
 			
 	?>
+			
 			<p>
-			<label for="<?php echo $this->get_field_id('url'); ?>">Enter the url to the Page. Please note that it needs to be a link to a <strong>facebook fanpage</strong>. Personal profiles are not allowed!
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'avia_framework'); ?>
+			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($instance['title']); ?>" /></label>
+			</p>
+			
+			<p>
+			<label for="<?php echo $this->get_field_id('url'); ?>"><?php _e('Enter the url to the Page. Please note that it needs to be a link to a <strong>facebook fanpage</strong>. Personal profiles are not allowed!', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('url'); ?>" name="<?php echo $this->get_field_name('url'); ?>" type="text" value="<?php echo esc_attr($instance['url']); ?>" /></label>
 			</p>
 			
 			
-			<p>
-			<label for="<?php echo $this->get_field_id('height'); ?>">Enter the widget height in pixel or % <br/><small>(100% would create a widget of equal height and width)</small>
-			<input class="widefat" id="<?php echo $this->get_field_id('height'); ?>" name="<?php echo $this->get_field_name('height'); ?>" type="text" value="<?php echo esc_attr($instance['height']); ?>" /></label>
-			</p>
-			
-			
-			<p><label for="<?php echo $this->get_field_id('border'); ?>">Display Border around the widget?
-			<?php echo $html->select($elementCat); ?>
-			</label></p>
 
 
 		<?php
@@ -148,10 +172,10 @@ if (!class_exists('avia_tweetbox'))
 {
 	class avia_tweetbox extends WP_Widget {
 
-		function avia_tweetbox() {
+		function __construct() {
 			//Constructor
 			$widget_ops = array('classname' => 'tweetbox', 'description' => 'A widget to display your latest twitter messages' );
-			$this->WP_Widget( 'tweetbox', THEMENAME.' Twitter Widget', $widget_ops );
+			parent::__construct( 'tweetbox', THEMENAME.' Twitter Widget', $widget_ops );
 		}
 
 		function widget($args, $instance) {
@@ -201,7 +225,7 @@ if (!class_exists('avia_tweetbox'))
 			$display_image = 	isset($instance['display_image']) ? strip_tags($instance['display_image']): "";
 	?>
 			<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>">Title:
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
 
 			<p><label for="<?php echo $this->get_field_id('username'); ?>">Enter your twitter username:
@@ -423,16 +447,15 @@ if (!class_exists('avia_newsbox'))
 		var $avia_post_type = '';
 		var $avia_new_query = '';
 
-		function avia_newsbox()
+		function __construct()
 		{
-			$widget_ops = array('classname' => 'newsbox', 'description' => 'A Sidebar widget to display latest post entries in your sidebar' );
+			$widget_ops = array('classname' => 'newsbox', 'description' => __('A Sidebar widget to display latest post entries in your sidebar', 'avia_framework') );
 
-			$this->WP_Widget( 'newsbox', THEMENAME.' Latest News', $widget_ops );
+			parent::__construct( 'newsbox', THEMENAME.' Latest News', $widget_ops );
 		}
 
 		function widget($args, $instance)
 		{
-
 			global $avia_config;
 
 			extract($args, EXTR_SKIP);
@@ -593,8 +616,8 @@ if (!class_exists('avia_newsbox'))
 			$excerpt = strip_tags($instance['excerpt']);
 
 
-			$elementCat = array("name" 	=> "Which categories should be used for the portfolio?",
-								"desc" 	=> "You can select multiple categories here",
+			$elementCat = array("name" 	=> __("Which categories should be used for the portfolio?", 'avia_framework'), 
+								"desc" 	=> __("You can select multiple categories here", 'avia_framework'),
 					            "id" 	=> $this->get_field_name('cat')."[]",
 					            "type" 	=> "select",
 					            "std"   => strip_tags($instance['cat']),
@@ -613,11 +636,11 @@ if (!class_exists('avia_newsbox'))
 			$html = new avia_htmlhelper();
 
 	?>
-			<p><label for="<?php echo $this->get_field_id('title'); ?>">Title:
+			<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('count'); ?>">How many entries do you want to display: </label>
+				<label for="<?php echo $this->get_field_id('count'); ?>"><?php _e('How many entries do you want to display: ', 'avia_framework'); ?></label>
 				<select class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>">
 					<?php
 					$list = "";
@@ -635,16 +658,16 @@ if (!class_exists('avia_newsbox'))
 
 			</p>
 
-			<p><label for="<?php echo $this->get_field_id('cat'); ?>">Choose the categories you want to display (multiple selection possible):
+			<p><label for="<?php echo $this->get_field_id('cat'); ?>"><?php _e('Choose the categories you want to display (multiple selection possible):', 'avia_framework'); ?>
 			<?php echo $html->select($elementCat); ?>
 			</label></p>
 
 			<p>
-				<label for="<?php echo $this->get_field_id('excerpt'); ?>">Display title only or title &amp; excerpt</label>
+				<label for="<?php echo $this->get_field_id('excerpt'); ?>"><?php _e('Display title only or title &amp; excerpt', 'avia_framework'); ?></label>
 				<select class="widefat" id="<?php echo $this->get_field_id('excerpt'); ?>" name="<?php echo $this->get_field_name('excerpt'); ?>">
 					<?php
 					$list = "";
-					$answers = array('show title only','display title and excerpt');
+					$answers = array(__('show title only', 'avia_framework'),__('display title and excerpt', 'avia_framework'));
 					foreach ($answers as $answer)
 					{
 						$selected = "";
@@ -679,16 +702,16 @@ if (!class_exists('avia_portfoliobox'))
 {
 	class avia_portfoliobox extends avia_newsbox
 	{
-		function avia_portfoliobox()
+		function __construct()
 		{
 			$this->avia_term = 'portfolio_entries';
 			$this->avia_post_type = 'portfolio';
 			$this->avia_new_query = ''; //set a custom query here
 
 
-			$widget_ops = array('classname' => 'newsbox', 'description' => 'A Sidebar widget to display latest portfolio entries in your sidebar' );
+			$widget_ops = array('classname' => 'newsbox', 'description' => __('A Sidebar widget to display latest portfolio entries in your sidebar', 'avia_framework') );
 
-			$this->WP_Widget( 'portfoliobox', THEMENAME.' Latest Portfolio', $widget_ops );
+			WP_Widget::__construct( 'portfoliobox', THEMENAME.' Latest Portfolio', $widget_ops );
 		}
 	}
 }
@@ -708,10 +731,10 @@ if (!class_exists('avia_socialcount'))
 {
 	class avia_socialcount extends WP_Widget {
 
-		function avia_socialcount() {
+		function __construct() {
 			//Constructor
-			$widget_ops = array('classname' => 'avia_socialcount', 'description' => 'A widget to display a link to your twitter profile and rss feed' );
-			$this->WP_Widget( 'avia_socialcount', THEMENAME.' RSS Link and Twitter Account', $widget_ops );
+			$widget_ops = array('classname' => 'avia_socialcount', 'description' => __('A widget to display a link to your twitter profile and rss feed', 'avia_framework') );
+			parent::__construct( 'avia_socialcount', THEMENAME.' RSS Link and Twitter Account', $widget_ops );
 		}
 
 		function widget($args, $instance) {
@@ -769,10 +792,10 @@ if (!class_exists('avia_socialcount'))
 			$rss 	 = empty($instance['rss'])     ? '' :  strip_tags($instance['rss']);
 	?>
 			<p>
-			<label for="<?php echo $this->get_field_id('twitter'); ?>">Twitter Username:
+			<label for="<?php echo $this->get_field_id('twitter'); ?>"><?php _e('Twitter Username:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('twitter'); ?>" name="<?php echo $this->get_field_name('twitter'); ?>" type="text" value="<?php echo esc_attr($twitter); ?>" /></label></p>
 
-			<p><label for="<?php echo $this->get_field_id('rss'); ?>">Enter your feed url:
+			<p><label for="<?php echo $this->get_field_id('rss'); ?>"><?php _e('Enter your feed url:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('rss'); ?>" name="<?php echo $this->get_field_name('rss'); ?>" type="text" value="<?php echo esc_attr($rss); ?>" /></label></p>
 
 
@@ -800,12 +823,12 @@ if (!class_exists('avia_partner_widget'))
 {
 	class avia_partner_widget extends WP_Widget {
 
-		function avia_partner_widget() {
+		function __construct() {
 
 			$this->add_cont = 2;
 			//Constructor
-			$widget_ops = array('classname' => 'avia_partner_widget', 'description' => 'An advertising widget that displays 2 images with 125 x 125 px in size' );
-			$this->WP_Widget( 'avia_partner_widget', THEMENAME.' Advertising Area', $widget_ops );
+			$widget_ops = array('classname' => 'avia_partner_widget', 'description' => __('An advertising widget that displays 2 images with 125 x 125 px in size', 'avia_framework') );
+			parent::__construct( 'avia_partner_widget', THEMENAME.' Advertising Area', $widget_ops );
 		}
 
 		function widget($args, $instance)
@@ -817,9 +840,9 @@ if (!class_exists('avia_partner_widget'))
 			$kriesiaddwidget ++;
 
 			$title = empty($instance['title']) ? '' : apply_filters('widget_title', $instance['title']);
-			$image_url = empty($instance['image_url']) ? '<span class="avia_parnter_empty"><span>'.__('Advertise here','avia_framework').'</span></span>' : '<img class="rounded" src="'.$instance['image_url'].'" title="" alt=""/>';
+			$image_url = empty($instance['image_url']) ? '<span class="avia_parnter_empty"><span>'.__('Advertise here','avia_framework').'</span></span>' : '<img class="rounded" src="'.$instance['image_url'].'" title="'.$title.'" alt="'.$title.'"/>';
 			$ref_url = empty($instance['ref_url']) ? '#' : apply_filters('widget_comments_title', $instance['ref_url']);
-			$image_url2 = empty($instance['image_url2']) ? '<span class="avia_parnter_empty"><span>'.__('Advertise here','avia_framework').'</span></span>' : '<img class="rounded" src="'.$instance['image_url2'].'" title="" alt=""/>';
+			$image_url2 = empty($instance['image_url2']) ? '<span class="avia_parnter_empty"><span>'.__('Advertise here','avia_framework').'</span></span>' : '<img class="rounded" src="'.$instance['image_url2'].'" title="'.$title.'" alt="'.$title.'"/>';
 			$ref_url2 = empty($instance['ref_url2']) ? '#' : apply_filters('widget_comments_title', $instance['ref_url2']);
 
 			if ( !empty( $title ) ) { echo $before_title . $title . $after_title; };
@@ -856,22 +879,22 @@ if (!class_exists('avia_partner_widget'))
 			$image_url2 = strip_tags($instance['image_url2']);
 			$ref_url2 = strip_tags($instance['ref_url2']);
 	?>
-			<p><label for="<?php echo $this->get_field_id('title'); ?>">Title:
+			<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo esc_attr($title); ?>" /></label></p>
 
-			<p><label for="<?php echo $this->get_field_id('image_url'); ?>">Image URL: <?php if($this->add_cont == 2) echo "(125px * 125px):"; ?>
+			<p><label for="<?php echo $this->get_field_id('image_url'); ?>"><?php _e('Image URL:', 'avia_framework'); ?> <?php if($this->add_cont == 2) echo "(125px * 125px):"; ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('image_url'); ?>" name="<?php echo $this->get_field_name('image_url'); ?>" type="text" value="<?php echo esc_attr($image_url); ?>" /></label></p>
 
-			<p><label for="<?php echo $this->get_field_id('ref_url'); ?>">Referal URL:
+			<p><label for="<?php echo $this->get_field_id('ref_url'); ?>"><?php _e('Referal URL:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('ref_url'); ?>" name="<?php echo $this->get_field_name('ref_url'); ?>" type="text" value="<?php echo esc_attr($ref_url); ?>" /></label></p>
 
 			<?php if($this->add_cont == 2)
 			{ ?>
 
-					<p><label for="<?php echo $this->get_field_id('image_url2'); ?>">Image URL 2: (125px * 125px):
+					<p><label for="<?php echo $this->get_field_id('image_url2'); ?>"><?php _e('Image URL 2: (125px * 125px):', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('image_url2'); ?>" name="<?php echo $this->get_field_name('image_url2'); ?>" type="text" value="<?php echo esc_attr($image_url2); ?>" /></label></p>
 
-			<p><label for="<?php echo $this->get_field_id('ref_url2'); ?>">Referal URL 2:
+			<p><label for="<?php echo $this->get_field_id('ref_url2'); ?>"><?php _e('Referal URL 2:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('ref_url2'); ?>" name="<?php echo $this->get_field_name('ref_url2'); ?>" type="text" value="<?php echo esc_attr($ref_url2); ?>" /></label></p>
 
 			<?php }?>
@@ -887,14 +910,14 @@ if (!class_exists('avia_one_partner_widget'))
 	//one image
 	class avia_one_partner_widget extends avia_partner_widget
 	{
-		function avia_one_partner_widget()
+		function __construct()
 		{
 
 			$this->add_cont = 1;
 
-			$widget_ops = array('classname' => 'avia_one_partner_widget', 'description' => 'An advertising widget that displays 1 big image' );
+			$widget_ops = array('classname' => 'avia_one_partner_widget', 'description' => __('An advertising widget that displays 1 big image', 'avia_framework') );
 
-			$this->WP_Widget( 'avia_one_partner_widget', THEMENAME.' Big Advertising Area', $widget_ops );
+			parent::__construct( 'avia_one_partner_widget', THEMENAME.' Big Advertising Area', $widget_ops );
 		}
 	}
 }
@@ -914,10 +937,10 @@ if (!class_exists('avia_combo_widget'))
 {
 	class avia_combo_widget extends WP_Widget {
 
-		function avia_combo_widget() {
+		function __construct() {
 			//Constructor
-			$widget_ops = array('classname' => 'avia_combo_widget', 'description' => 'A widget that displays your popular posts, recent posts, recent comments and a tagcloud' );
-			$this->WP_Widget( 'avia_combo_widget', THEMENAME.' Combo Widget', $widget_ops );
+			$widget_ops = array('classname' => 'avia_combo_widget', 'description' => __('A widget that displays your popular posts, recent posts, recent comments and a tagcloud', 'avia_framework') );
+			parent::__construct( 'avia_combo_widget', THEMENAME.' Combo Widget', $widget_ops );
 		}
 
 		function widget($args, $instance)
@@ -974,7 +997,7 @@ if (!class_exists('avia_combo_widget'))
 
 	?>
 			<p>
-			<label for="<?php echo $this->get_field_id('count'); ?>">Number of posts you want to display:
+			<label for="<?php echo $this->get_field_id('count'); ?>"><?php _e('Number of posts you want to display:', 'avia_framework'); ?>
 			<input class="widefat" id="<?php echo $this->get_field_id('count'); ?>" name="<?php echo $this->get_field_name('count'); ?>" type="text" value="<?php echo esc_attr($instance['count']); ?>" /></label></p>
 
 
@@ -1125,9 +1148,9 @@ if (!class_exists('avia_google_maps'))
 	class avia_google_maps extends WP_Widget {
 
 		// constructor
-		function avia_google_maps() {
-			$widget_ops = array('classname' => 'avia_google_maps', 'description' => __( 'Add a google map to your blog or site') );
-			$this->WP_Widget('avia_google_maps', THEMENAME.' Google Maps Widget', $widget_ops);
+		function __construct() {
+			$widget_ops = array('classname' => 'avia_google_maps', 'description' => __( 'Add a google map to your blog or site', 'avia_framework') );
+			parent::__construct('avia_google_maps', THEMENAME.' Google Maps Widget', $widget_ops);
 
             add_action( 'admin_enqueue_scripts', array(&$this,'helper_print_google_maps_scripts') );
 		}
@@ -1175,7 +1198,7 @@ if (!class_exists('avia_google_maps'))
 				<input class="widefat" id="<?php print $this->get_field_id('title'); ?>" name="<?php print $this->get_field_name('title'); ?>" type="text" value="<?php print $title; ?>" />
 				</p>
 				<p>
-				Enter the latitude and longitude of the location you want to display. Need help finding the latitude and longitude? <a href="#" class="avia-coordinates-help-link button">Click here to enter an address.</a>
+				<?php _e('Enter the latitude and longitude of the location you want to display. Need help finding the latitude and longitude?', 'avia_framework'); ?> <a href="#" class="avia-coordinates-help-link button"><?php _e('Click here to enter an address.','avia_framework'); ?></a>
                 </p>
                 <div class="avia-find-coordinates-wrapper">
                     <p>
@@ -1278,7 +1301,15 @@ if (!class_exists('avia_google_maps'))
         function helper_print_google_maps_scripts()
         {
             $prefix  = is_ssl() ? "https" : "http";
-            wp_register_script( 'avia-google-maps-api', $prefix.'://maps.google.com/maps/api/js?sensor=false', array('jquery'), '3', true);
+            $api_key = avia_get_option('gmap_api');
+            $api_url = $prefix.'://maps.google.com/maps/api/js?v=3.24';
+            
+            if($api_key != ""){
+	           $api_url .= "&key=" .$api_key;
+            }
+            
+            wp_register_script( 'avia-google-maps-api', $api_url, array('jquery'), NULL, true);
+            
             
             $load_google_map_api = apply_filters('avf_load_google_map_api', true, 'avia_google_map_widget');
             
@@ -1343,7 +1374,7 @@ if(!function_exists('avia_printmap'))
 
 		if(apply_filters('avia_google_maps_widget_load_api', true, $avia_config['g_maps_widget_active']))
         {
-            wp_register_script( 'avia-google-maps-api', $prefix.'://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false', array('jquery'), '1', false);
+            wp_register_script( 'avia-google-maps-api', $prefix.'://maps.googleapis.com/maps/api/js?v=3.24', array('jquery'), '1', false);
             wp_enqueue_script( 'avia-google-maps-api' );
         }
 
@@ -1412,5 +1443,282 @@ if(!function_exists('avia_printmap'))
 	   	<div id='avia_google_maps_$unique' style='$height $width' class='avia_google_maps_container'></div>";
 
 	   return $output;
+	}
+}
+
+
+
+
+
+/*
+Modified version of instagram widget by
+Author: Scott Evans
+Copyright © 2013 Scott Evans
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+*/
+
+class avia_instagram_widget extends WP_Widget {
+
+	function __construct() {
+		parent::__construct(
+			'avia-instagram-feed',
+			THEMENAME ." ". __( 'Instagram', 'avia_framework' ),
+			array( 'classname' => 'avia-instagram-feed', 'description' => __( 'Displays your latest Instagram photos', 'avia_framework' ) )
+		);
+	}
+	
+	function widget( $args, $instance ) {
+
+		extract( $args, EXTR_SKIP );
+
+		$title = empty( $instance['title'] ) ? '' : apply_filters( 'widget_title', $instance['title'] );
+		$username = empty( $instance['username'] ) ? '' : $instance['username'];
+		$limit = empty( $instance['number'] ) ? 9 : $instance['number'];
+		$columns = empty( $instance['columns'] ) ? 3 : $instance['columns'];
+		$size = empty( $instance['size'] ) ? 'large' : $instance['size'];
+		$target = empty( $instance['target'] ) ? '_self' : $instance['target'];
+		$link = empty( $instance['link'] ) ? '' : $instance['link'];
+
+		echo $before_widget;
+		if ( ! empty( $title ) ) { echo $before_title . $title . $after_title; };
+
+		do_action( 'aviw_before_widget', $instance );
+
+		if ( $username != '' ) {
+
+			$media_array = $this->scrape_instagram( $username, $limit );
+
+			if ( is_wp_error( $media_array ) ) {
+
+				echo $media_array->get_error_message();
+
+			} else {
+
+				// filter for images only?
+				if ( $images_only = apply_filters( 'aviw_images_only', FALSE ) )
+					$media_array = array_filter( $media_array, array( $this, 'images_only' ) );
+
+				// filters for custom classes
+				$ulclass = esc_attr( apply_filters( 'aviw_list_class', 'av-instagram-pics av-instagram-size-' . $size ) );
+				$rowclass = esc_attr( apply_filters( 'aviw_row_class', 'av-instagram-row' ) );
+				$liclass = esc_attr( apply_filters( 'aviw_item_class', 'av-instagram-item' ) );
+				$aclass = esc_attr( apply_filters( 'aviw_a_class', '' ) );
+				$imgclass = esc_attr( apply_filters( 'aviw_img_class', '' ) );
+
+				?><div class="<?php echo esc_attr( $ulclass ); ?>"><?php
+				
+				$last_id  = end($media_array);
+				$last_id  = $last_id['id'];
+				
+				$rowcount = 0;	
+				foreach ( $media_array as $item ) 
+				{
+					if($rowcount == 0)
+					{
+						echo "<div class='{$rowclass}'>";
+					}
+					
+					$rowcount ++ ;
+					$targeting = $target;
+					if($target == "lightbox")
+					{
+						$targeting = "";
+						$item['link'] = $item['original'];
+					}
+	
+					echo '<div class="'. $liclass .'">';
+					echo '<a href="'. esc_url( $item['link'] ) .'" target="'. esc_attr( $targeting ) .'"  class="'. $aclass .'">';
+					echo '<img src="'. esc_url( $item[$size] ) .'"  alt="'. esc_attr( $item['description'] ) .'" title="'. esc_attr( $item['description'] ).'"  class="'. $imgclass .'"/>';
+					echo '</a></div>';
+					
+					if($rowcount % $columns == 0 || $last_id == $item['id'])
+					{
+						echo '</div>';
+						$rowcount = 0;
+					}
+					
+				}
+				echo '</div>';
+			}
+		}
+
+		if ( $link != '' ) {
+			?>
+			<a class="av-instagram-follow avia-button" href="//instagram.com/<?php echo esc_attr( trim( $username ) ); ?>" rel="me" target="<?php echo esc_attr( $target ); ?>"><?php echo $link; ?></a><?php
+		}
+
+		do_action( 'aviw_after_widget', $instance );
+
+		echo $after_widget;
+	}
+	
+
+	
+	function form( $instance ) 
+	{
+			
+		$instance = wp_parse_args( (array) $instance, array( 
+			'title' => __( 'Instagram', 'avia_framework' ), 
+			'username' => '', 
+			'size' => 'large', 
+			'link' => __( 'Follow Me!', 'avia_framework' ), 
+			'number' => 9, 
+			'target' => 'lightbox' , 
+			'columns' => 3 ) 
+		);
+		
+		$title = esc_attr( $instance['title'] );
+		$username = esc_attr( $instance['username'] );
+		$number = absint( $instance['number'] );
+		if($number > 12) $number = 12;
+		$size = esc_attr( $instance['size'] );
+		$target = esc_attr( $instance['target'] );
+		$link = esc_attr( $instance['link'] );
+		$columns = esc_attr( $instance['columns'] );
+		?>
+		<p><label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php _e( 'Title', 'avia_framework' ); ?>: <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo $title; ?>" /></label></p>
+		<p><label for="<?php echo $this->get_field_id( 'username' ); ?>"><?php _e( 'Username', 'avia_framework' ); ?>: <input class="widefat" id="<?php echo $this->get_field_id( 'username' ); ?>" name="<?php echo $this->get_field_name( 'username' ); ?>" type="text" value="<?php echo $username; ?>" /></label></p>
+		<p><label for="<?php echo $this->get_field_id( 'number' ); ?>"><?php _e( 'Number of photos (maximum 12)', 'avia_framework' ); ?>: <input class="widefat" id="<?php echo $this->get_field_id( 'number' ); ?>" name="<?php echo $this->get_field_name( 'number' ); ?>" type="text" value="<?php echo $number; ?>" /></label></p>
+		<p><label for="<?php echo $this->get_field_id( 'columns' ); ?>"><?php _e( 'Number of columns', 'avia_framework' ); ?>: <input class="widefat" id="<?php echo $this->get_field_id( 'columns' ); ?>" name="<?php echo $this->get_field_name( 'columns' ); ?>" type="text" value="<?php echo $columns; ?>" /></label></p>
+		<p><label for="<?php echo $this->get_field_id( 'size' ); ?>"><?php _e( 'Photo size', 'avia_framework' ); ?>:</label>
+			<select id="<?php echo $this->get_field_id( 'size' ); ?>" name="<?php echo $this->get_field_name( 'size' ); ?>" class="widefat">
+				<option value="thumbnail" <?php selected( 'thumbnail', $size ) ?>><?php _e( 'Thumbnail', 'avia_framework' ); ?></option>
+				<option value="small" <?php selected( 'small', $size ) ?>><?php _e( 'Small', 'avia_framework' ); ?></option>
+				<option value="large" <?php selected( 'large', $size ) ?>><?php _e( 'Large', 'avia_framework' ); ?></option>
+				<option value="original" <?php selected( 'original', $size ) ?>><?php _e( 'Original', 'avia_framework' ); ?></option>
+			</select>
+		</p>
+		<p><label for="<?php echo $this->get_field_id( 'target' ); ?>"><?php _e( 'Open links in', 'avia_framework' ); ?>:</label>
+			<select id="<?php echo $this->get_field_id( 'target' ); ?>" name="<?php echo $this->get_field_name( 'target' ); ?>" class="widefat">
+				<option value="lightbox" <?php selected( 'lightbox', $target ) ?>><?php _e( 'Lightbox', 'avia_framework' ); ?></option>
+				<option value="_self" <?php selected( '_self', $target ) ?>><?php _e( 'Current window (_self)', 'avia_framework' ); ?></option>
+				<option value="_blank" <?php selected( '_blank', $target ) ?>><?php _e( 'New window (_blank)', 'avia_framework' ); ?></option>
+			</select>
+		</p>
+		<p><label for="<?php echo $this->get_field_id( 'link' ); ?>"><?php _e( 'Link text', 'avia_framework' ); ?>: <input class="widefat" id="<?php echo $this->get_field_id( 'link' ); ?>" name="<?php echo $this->get_field_name( 'link' ); ?>" type="text" value="<?php echo $link; ?>" /></label></p>
+		<?php
+	}
+	
+	function update( $new_instance, $old_instance ) {
+		$instance = $old_instance;
+		$instance['title'] = strip_tags( $new_instance['title'] );
+		$instance['username'] = trim( strip_tags( $new_instance['username'] ) );
+		$instance['number'] = ! absint( $new_instance['number'] ) ? 9 : $new_instance['number'];
+		$instance['columns'] = ! absint( $new_instance['columns'] ) ? 3 : $new_instance['columns'];
+		
+		if($instance['columns'] > 6) $instance['columns'] = 6;
+		if($instance['columns'] < 1) $instance['columns'] = 1;
+		
+		
+		$instance['size'] = ( ( $new_instance['size'] == 'thumbnail' || $new_instance['size'] == 'large' || $new_instance['size'] == 'small' || $new_instance['size'] == 'original' ) ? $new_instance['size'] : 'large' );
+		$instance['target'] = ( ( $new_instance['target'] == '_self' || $new_instance['target'] == '_blank'|| $new_instance['target'] == 'lightbox' ) ? $new_instance['target'] : '_self' );
+		$instance['link'] = strip_tags( $new_instance['link'] );
+		return $instance;
+	}
+	
+		// based on https://gist.github.com/cosmocatalano/4544576
+	function scrape_instagram( $username, $slice = 9 ) {
+
+		$username = strtolower( $username );
+		$username = str_replace( '@', '', $username );
+
+		if ( false === ( $instagram = get_transient( 'av_insta1-'.sanitize_title_with_dashes( $username ) ) ) ) {
+
+			//$remote = wp_remote_get( 'http://instagram.com/'.trim( $username ) );
+			$remote = wp_remote_get( 'https://www.instagram.com/'.trim( $username ), array( 'sslverify' => false, 'timeout' => 60 ) );
+			
+			if ( is_wp_error( $remote ) )
+				return new WP_Error( 'site_down', __( 'Unable to communicate with Instagram.', 'avia_framework' ) );
+
+			if ( 200 != wp_remote_retrieve_response_code( $remote ) )
+				return new WP_Error( 'invalid_response', __( 'Instagram did not return a 200.', 'avia_framework' ) );
+
+			$shards = explode( 'window._sharedData = ', $remote['body'] );
+			$insta_json = explode( ';</script>', $shards[1] );
+			$insta_array = json_decode( $insta_json[0], TRUE );
+
+			if ( ! $insta_array )
+				return new WP_Error( 'bad_json', __( 'Instagram has returned invalid data.', 'avia_framework' ) );
+
+			if ( isset( $insta_array['entry_data']['ProfilePage'][0]['user']['media']['nodes'] ) ) {
+				$images = $insta_array['entry_data']['ProfilePage'][0]['user']['media']['nodes'];
+			} else {
+				return new WP_Error( 'bad_json_2', __( 'Instagram has returned invalid data.', 'avia_framework' ) );
+			}
+
+			if ( ! is_array( $images ) )
+				return new WP_Error( 'bad_array', __( 'Instagram has returned invalid data.', 'avia_framework' ) );
+
+			$instagram = array();
+
+			foreach ( $images as $image ) {
+
+				$image['thumbnail_src'] = preg_replace( "/^https:/i", "", $image['thumbnail_src'] );
+				$image['thumbnail'] = str_replace( 's640x640', 's160x160', $image['thumbnail_src'] );
+				$image['small'] = str_replace( 's640x640', 's320x320', $image['thumbnail_src'] );
+				$image['large'] = $image['thumbnail_src'];
+				$image['display_src'] = preg_replace( "/^https:/i", "", $image['display_src'] );
+
+				if ( $image['is_video'] == true ) {
+					$type = 'video';
+				} else {
+					$type = 'image';
+				}
+
+				$caption = __( 'Instagram Image', 'avia_framework' );
+				if ( ! empty( $image['caption'] ) ) {
+					$caption = $image['caption'];
+				}
+
+				$instagram[] = array(
+					'description'   => $caption,
+					'link'		  	=> '//instagram.com/p/' . $image['code'],
+					'time'		  	=> $image['date'],
+					'comments'	  	=> $image['comments']['count'],
+					'likes'		 	=> $image['likes']['count'],
+					'thumbnail'	 	=> $image['thumbnail'],
+					'small'			=> $image['small'],
+					'large'			=> $image['large'],
+					'original'		=> $image['display_src'],
+					'type'		  	=> $type,
+					'id'			=> $image['id']
+				);
+			}
+
+			// do not set an empty transient - should help catch private or empty accounts
+			if ( ! empty( $instagram ) ) {
+				$instagram = base64_encode( serialize( $instagram ) );
+				set_transient( 'av_insta1-'.sanitize_title_with_dashes( $username ), $instagram, apply_filters( 'null_instagram_cache_time', HOUR_IN_SECONDS*2 ) );
+			}
+		}
+
+		if ( ! empty( $instagram ) ) {
+
+			$instagram = unserialize( base64_decode( $instagram ) );
+			return array_slice( $instagram, 0, $slice );
+
+		} else {
+
+			return new WP_Error( 'no_images', __( 'Instagram did not return any images.', 'avia_framework' ) );
+
+		}
+	}
+
+	function images_only( $media_item ) {
+
+		if ( $media_item['type'] == 'image' )
+			return true;
+
+		return false;
 	}
 }

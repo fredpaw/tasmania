@@ -100,8 +100,8 @@
 				<footer class='container_wrap socket_color' id='socket' <?php avia_markup_helper(array('context' => 'footer')); ?>>
                     <div class='container'>
 						<p class="text-center"><img src="<?php bloginfo("template_url"); ?>/images/footer_logo.png" /><span class="text-bold text-size-23" id="contact-text"> | 联系我们</span></p>
-                        <p class="text-center text-size-14">电话：400 808 3028 &nbsp;&nbsp;&nbsp;&nbsp;010-59003028 &nbsp;&nbsp;&nbsp;&nbsp;010-59002205 &nbsp;&nbsp;&nbsp;&nbsp;地址：北京朝阳区东大桥路8号SOHO尚都南塔2805室 &nbsp;&nbsp;&nbsp;&nbsp;邮编：100020</p>
-						<p class="text-center text-size-14">Email：services@cg6xue.com</p>
+                        <p class="text-center text-size-14">电话：+61 (03) 6125 6939（霍巴特）&nbsp;&nbsp;&nbsp;&nbsp;+86 18510980063（中国） &nbsp;&nbsp;&nbsp;&nbsp;地址：Level 1, 152 Collins, Hobart, Tasmania 7000</p>
+						<p class="text-center text-size-14">Email：tasinvestmanager@gmail.com</p>
 
                         <?php
                         	if(avia_get_option('footer_social', 'disabled') != "disabled")

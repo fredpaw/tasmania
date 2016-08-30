@@ -36,8 +36,11 @@
     	//functionallity that fetches the google maps coordinates
     	$.AviaElementBehavior.gmaps_fetcher(); 
     	
+    	if(typeof $.AviaElementBehavior.wp_save_template == 'function')
+    	{
     	//save template functionality avia-template-saving.js
     	new $.AviaElementBehavior.wp_save_template(); 
+        }
         
         //default tooltips for various elements like shortcodes
     	new $.AviaTooltip({attach:'body'});
@@ -49,7 +52,7 @@
 	
 	$.AviaElementBehavior.gmaps_fetcher =  function()
 	{	
-		var map_api 	= 'https://maps.googleapis.com/maps/api/js?v=3&sensor=false&callback=av_builder_maps_loaded', 
+		var map_api 	= 'https://maps.googleapis.com/maps/api/js?v=3.24&callback=av_builder_maps_loaded', 
 			loading 	= false,
 			clicked		= {};
 	
@@ -64,6 +67,12 @@
 				var script 	= document.createElement('script');
 				script.type = 'text/javascript';	
 				script.src 	= map_api;
+				
+				if(avia_framework_globals.gmap_api != 'undefined' && avia_framework_globals.gmap_api != "")
+				{
+					script.src 	+= "&key=" + avia_framework_globals.gmap_api;
+				}
+				
       			document.body.appendChild(script);
 			}
 			else if(typeof window.google != 'undefined' && typeof window.google.maps != 'undefined')
@@ -122,10 +131,17 @@
                 {
                     coordinates.errormessage = avia_gmaps_L10n.toomanyrequests;
                 }
-
+                else if (status == google.maps.GeocoderStatus.REQUEST_DENIED) 
+                {
+	                new $.AviaModalNotification({mode:'error', msg:avia_modal_L10n.gmap_api_text});
+                }
+				
                 if(typeof coordinates.errormessage != 'undefined' && coordinates.errormessage != '') alert(coordinates.errormessage);
                 data.coordinatcontainer.addClass('av-visible');
             });
+            
+            
+            
 		}
 	}
 	

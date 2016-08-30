@@ -55,8 +55,8 @@ class footerColumn4 extends WP_Widget {
 	
 	function widget() {
 		?>
-		<p class="text-center"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/shangcheng.svg" /></p>
-		<p class="text-size-18 text-center"><a href="#">塔斯马尼亚商城</a></p>
+		<p class="text-center"><a href="<?php bloginfo('url');?>/store"><img class="image-half-size" src="<?php bloginfo('template_url');?>/images/shangcheng.svg" /></a></p>
+		<p class="text-size-18 text-center"><a href="<?php bloginfo('url');?>/store">塔斯马尼亚商城</a></p>
 		<?php
 	}
 }

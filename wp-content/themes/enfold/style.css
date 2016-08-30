@@ -1,7 +1,7 @@
 /*
-Theme Name: Enfold 
-Description: <strong>A superflexible and responsive Business Theme by Kriesi</strong> - <br/> Update notifications available on twitter and facebook:<br/> <a href='http://twitter.com/kriesi'>Follow me on twitter</a><br/> - <a href='http://www.facebook.com/pages/Kriesi/333648177216'>Join the Facebook Group</a>
-Version: 3.2.3
+Theme Name: Enfold
+-Released By Null24.NetDescription: <strong>A superflexible and responsive Business Theme by Kriesi</strong> - <br/> Update notifications available on twitter, facebook and via newsletter:<br/> <a href='http://twitter.com/kriesi'>Follow me on twitter</a><br/> - <a href='http://www.facebook.com/pages/Kriesi/333648177216'>Join the Facebook Group</a> - <a href='http://www.kriesi.at/newsletter'>Subscribe to our Newsletter</a>
+Version: 3.7.1
 Author: Kriesi
 Author URI: http://www.kriesi.at
 License: Themeforest Split Licence
@@ -18,5 +18,5 @@ Theme URI: www.kriesi.at/themes/enfold/
 * Instead use the custom.css file that is located in your themes /css/ folder to add your styles. 
 * You can copy a style rule from any of your css files and paste it in custom.css and
 * it will override the original style. If you just want to add small css snippets you might also
-* want to consider to add it to the designated CSS option field in your themes backend at: Theme Options->Styling
+* want to consider to add it to the designated CSS option field in your themes backend at: Theme Options->General Styling
 */

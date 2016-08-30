@@ -11,8 +11,6 @@ RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /tasmania/index.php [L]
-
-php_value upload_max_filesize 25m
 </IfModule>
 
 # END WordPress

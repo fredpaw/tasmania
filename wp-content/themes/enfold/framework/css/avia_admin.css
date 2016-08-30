@@ -424,8 +424,9 @@ display:none;
 }
 
 #avia_options_page div .avia_heading{
-font-size: 11px;
+font-size: 12px;
 color:#888;
+line-height: 1.65em;
 }
 
 .avia_heading h4{
@@ -581,16 +582,23 @@ opacity: 0;
 /*notifications*/
 
 .av-text-notice{
-	border: 1px solid #116e94;
-	background: #0074a2;
+	border: 1px solid #2EA2CC;
+	background: #2EA2CC;
 	color: #fff;
 	display: block;
 	padding:10px;
 	margin:5px 0;
 }
 
+
+
 .av-text-notice a{color:#fff; text-decoration: underline;}
 .av-text-notice a:hover{opacity: 0.9; text-decoration: none;}
+
+div .av-text-notice.av-notice-error{
+	border: 1px solid #cc2929;
+	background: #e43b3b;
+}
 
 .avia_notification{
 padding:20px;
@@ -1242,6 +1250,7 @@ overflow: hidden;
 #wpwrap .widget-inside .avia_select_style_wrap{
 background: none;
 padding:0;
+display:block;
 }
 
 #wpwrap .widget-inside .avia_select_style_wrap select{
@@ -2075,7 +2084,78 @@ margin:0 auto;
 
 .av-error{padding:0px 10px; margin-right:20px; font-size: 12px; color: #D37878;  background: #fff; border:1px dashed #D37878; }
 
+/*verification field*/
 
+.avia_verification_field{
+	
+}
+
+div .avia_verification_field .avia_control{
+	width:100%
+}
+
+#wpwrap .avia_verification_field .avia_upload_style_wrap input{
+	width:360px;
+}
+
+#wpwrap .avia_verification_field .avia_upload_style_wrap .avia_button{
+	width: 210px;
+	padding:0;
+}
+
+#avia_mailchimp_api{
+	min-height: 303px;
+}
+
+.av-verification-response-wrapper{
+	margin-top:20px;
+}
+
+.av-verification-response-wrapper .av-text-notice{
+	margin-bottom:0;
+	border-top-right-radius: 4px;
+	border-top-left-radius: 4px;
+	background: #5c951e;
+	border: #5c951e;
+	padding: 15px 10px;
+}
+
+.av-verification-mailchimp-list{
+
+}
+
+.av-verification-cell{
+	border:1px solid #e1e1e1;
+	border-top: none;
+	padding:10px;
+	line-height: 1.6em;
+}
+
+.av-verification-cell-heading{
+	background: #f8f8f8;
+}
+
+.av-verification-cell-sub{
+	padding-left:39px;
+}
+
+.av-verification-required{
+	color: #5c951e;
+}
+
+.avia_verification_field .avia_verify_input{
+	left:0;
+}
+
+
+.av-verification-extra-data{
+	color:#aaa;
+	font-size: 12px;
+}
+
+.av-verification-extra-data-right{
+	float: right;
+}
 
 
 /*avia iconfont manager*/

@@ -30,7 +30,7 @@ jQuery(function()
         var options = {
             fxIn: jQuery(this).siblings(".fx_in").val(),
             expSym: jQuery(this).siblings(".ex_sym").val(),
-            conSym: jQuery(this).siblings(".con_sym").val(),
+            conSym: jQuery(this).siblings(".con_sym").val()
         };
 
         jQuery(this).on("click", "li.jaw_years a.jaw_years, li.jaw_months a.jaw_months", function(e)

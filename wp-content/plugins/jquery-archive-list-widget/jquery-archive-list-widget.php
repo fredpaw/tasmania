@@ -5,11 +5,11 @@ require_once dirname(__FILE__) . '/admin/JAW_Walker_Category_Checklist.php';
   Plugin Name: jQuery Archive List Widget
   Plugin URI: http://skatox.com/blog/jquery-archive-list-widget/
   Description: A widget for displaying an archive list with some effects.
-  Version: 3.0.2
+  Version: 3.0.6
   Author: Miguel Useche
   Author URI: http://migueluseche.com/
   License: GPL2
-  Copyleft 2009-2015  Miguel Useche  (email : migueluseche@skatox.com)
+  Copyleft 2009-2016  Miguel Useche  (email : migueluseche@skatox.com)
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ class JQArchiveList extends WP_Widget
 
     public function __construct()
     {
-        add_shortcode('jQuery Archive List', array($this,'filter'));
+        add_shortcode('jQueryArchiveList', array($this,'filter'));
         add_filter('widget_text', 'do_shortcode');
 
         if (function_exists("load_plugin_textdomain")) {
@@ -58,7 +58,7 @@ class JQArchiveList extends WP_Widget
         }
         load_default_textdomain();
 
-        parent::WP_Widget(
+        parent::__construct(
             'jal_widget',
             'jQuery Archive List Widget',
             array(
@@ -316,7 +316,7 @@ class JQArchiveList extends WP_Widget
             $where .= "AND {$wpdb->term_taxonomy}.taxonomy = 'category' ";
         }
 
-        return apply_filters('getarchives_where', $where);
+        return apply_filters('getarchives_where', $where, array());
     }
 
     protected function buildSqlJoin()
@@ -330,7 +330,7 @@ class JQArchiveList extends WP_Widget
             $join .= " LEFT JOIN {$wpdb->term_taxonomy} ON({$wpdb->term_relationships}.term_taxonomy_id = {$wpdb->term_taxonomy}.term_taxonomy_id) ";
         }
 
-        return apply_filters('getarchives_join', $join);
+        return apply_filters('getarchives_join', $join, array());
     }
 
     protected function getYears()

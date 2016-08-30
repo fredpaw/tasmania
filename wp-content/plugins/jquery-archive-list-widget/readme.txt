@@ -2,9 +2,9 @@
 Contributors: skatox
 Donate link: http://skatox.com/blog/jquery-archive-list-widget/
 Tags: jquery, ajax, javacript, collapse, collapsible, archive, collapsible archive, widget
-Requires at least: 3.0
-Tested up to: 4.1
-Stable tag: 3.0.2
+Requires at least: 4.3
+Tested up to: 4.5
+Stable tag: 3.0.6
 
 A jQuery widget (can be used in posts) for displaying an archive list with some effects.
 
@@ -20,7 +20,7 @@ This plugin provides a widget and a filter to display a collapsible archive list
 1. Auto expands current/select year from posts.
 1. Select the categories to exclude
 1. Multiple instances support.
-1. Shortcode support  *[jQuery Archive List]*
+1. Shortcode support  *[jQueryArchiveList]*
 1. Generates valid HTML5 code.
 1. Supports multiple languages.
 1. Compatible with most JS caché and minify plugins.
@@ -31,7 +31,7 @@ This plugin provides a widget and a filter to display a collapsible archive list
 1. Make a directory jquery-archive-list-widget under */wp-content/plugins/*
 1. Upload all downloaded files to */wp-content/plugins/jquery-archive-list-widget/*
 1. Activate plugin at the plugins section.
-1. Go to *Presentation -> Widgets* and drag the jQuery Archive List to your sidebar and configure it, if you want to display it inside a post then write *[jQuery Archive List]* at the location where it will be shown and save it.
+1. Go to *Presentation -> Widgets* and drag the jQuery Archive List to your sidebar and configure it, if you want to display it inside a post then write *[jQueryArchiveList]* at the location where it will be shown and save it.
 
 == Configuration ==
 
@@ -71,7 +71,7 @@ just play with the widget's classes: .jaw_symbol, .jaw_years, .jaw_months.
 
 = Can I show this list inside posts? =
 
-Yes, only write *[jQuery Archive List]* anywhere inside a post or page's contest and it will be replaced for
+Yes, only write *[jQueryArchiveList]* anywhere inside a post or page's contest and it will be replaced for
 the archive list when rendering the content. You can add the following parameters to change its behavior:
 
 1. **showcount** ( boolean ): select if you want to show the count post inside that month/year.
@@ -97,7 +97,7 @@ By using it, recommending it to other users, giving it 5 starts at plugin's word
 
 = How can i add multiples instances? =
 
-Since 2.0 you can add as many instances as you want, but there's another way to do it, just add a new Text widget only with the shortcode [jQuery Archive List] then it will have a new copy of the widget.
+Since 2.0 you can add as many instances as you want, but there's another way to do it, just add a new Text widget only with the shortcode [jQueryArchiveList] then it will have a new copy of the widget.
 
 = Can I have different instances with different configuration? =
 
@@ -110,6 +110,18 @@ Since 2.0 it's possible. Each instance has its own configuration. Shortcode widg
 2. Here you can see a list of archives and its month archives expanded.
 
 == Change Log ==
+
+= 3.0.6 =
+* Fixed some compatibility issues with translations plugins like PolyLang.
+
+= 3.0.5 =
+* Fixed Javascript bug present in Internet Explorer 6,7,8,9,10.
+
+= 3.0.4 =
+* Shortcut has been changed to [jQueryArchiveList] because Wordpress 4.4 doesn't let to use spaces in shortcodes.
+
+= 3.0.3 =
+* Minor fixes to add total compability with Wordpress 4.3
 
 = 3.0.2 =
 * Solved missing months bug.
@@ -190,13 +202,13 @@ Since 2.0 it's possible. Each instance has its own configuration. Shortcode widg
 * Removed &nbsp; characters, all spacing should be done by CSS.
 
 = 1.1 =
-* Added support for multiples instances (by writing [jQuery Archive List] on any Text widget)
+* Added support for multiples instances (by writing [jQueryArchiveList] on any Text widget)
 * Added support for Wordpress' reading filters, like reading permissions using Role Scoper plugin (thanks to Ramiro García for the patch)
 * Improved compatibility with Wordpress 3.x
 
 = 1.0 =
 * Added support for month's format
-* Now the jquery archive list can be printed from a post, just write [jQuery Archive List] anywhere inside the post.
+* Now the jquery archive list can be printed from a post, just write [jQueryArchiveList] anywhere inside the post.
 * Added support for i18n, so you can translate widget configuration's text to your language.
 * Separed JS code from HTML code, so browsers should cache JS content for faster processing.
 * Automatic loading of jQuery JS library.

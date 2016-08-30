@@ -98,6 +98,13 @@ if( ! class_exists( 'avia_form' ) )
          * @var int
          */
         var $width_translate = array('fullwidth'=>1, 'element_half' => 0.5, 'element_fourth' => 0.25, 'element_third' => 0.3, 'element_two_third' => 0.6, 'element_three_fourth' => 0.75);
+        
+        /*overwrite the send function*/
+        var $execute = "";
+        
+        /*error message that can be displayed in front of form*/
+        var $error_msg;
+        
 
 		/**
          * Constructor
@@ -105,7 +112,7 @@ if( ! class_exists( 'avia_form' ) )
          * The constructor sets up the default params
          * @param array $params array with default form information such as submit button label, heading and success message
          */
-		function avia_form($params)
+		function __construct($params)
 		{
 			add_filter('avf_safe_string_trans', array(&$this,'remove_invalid_chars'), 10, 3);
 
@@ -120,8 +127,17 @@ if( ! class_exists( 'avia_form' ) )
 			
 			$form_class  = apply_filters('avf_ajax_form_class', 'ajax_form', $this->formID, $this->form_params);
 			$form_class .= $this->placeholder ? " av-form-labels-hidden " : " av-form-labels-visible ";
+			$form_data   = "";
 			
-			$this->output  = '<form action="'.$params['action'].'" method="post" class="'.$form_class.' '.$extraClass.'" data-avia-form-id="'.$this->formID.'" '.$redirect.'><fieldset>';
+			if(isset($this->form_params['form_data']))
+			{
+				foreach($this->form_params['form_data'] as $datakey => $dataval)
+				{
+					$form_data .= " data-{$datakey}='{$dataval}'" ;
+				}
+			}
+			
+			$this->output  = '<form action="'.$params['action'].'" method="post" '.$form_data.' class="'.$form_class.' '.$extraClass.'" data-avia-form-id="'.$this->formID.'" '.$redirect.'><fieldset>';
 			$this->output .=  $params['heading'];
 
 			$this->length = apply_filters('avf_form_el_name_length', 30, $this->formID, $this->form_params);
@@ -133,6 +149,17 @@ if( ! class_exists( 'avia_form' ) )
 				$this->submit_form = false; //dont submit the form
 				$this->do_checks   = false; //dont do any checks on the form elements
 			}
+			
+			if(!empty( $params['custom_send'] ))
+			{
+				$this->execute = $params['custom_send'];
+			}
+			else
+			{
+				$this->execute = array($this, 'send');
+			}
+			
+			$this->submit_attr = apply_filters('avf_contact_form_submit_button_attr', '', $this->formID, $this->form_params);
 		}
 
 		/**
@@ -172,13 +199,20 @@ if( ! class_exists( 'avia_form' ) )
 			$this->form_elements = $elements;
 			$iterations = 0;
 			$width = "";
+			$counter = 0;
+			$el_count = count($elements) - 1;
 			
 			foreach($elements as $key => $element)
 			{
+				$counter ++;
+				if(isset( $element['id'] )) $key = $element['id'];
+				
 				if(isset($element['type']) && method_exists($this, $element['type']))
 				{
 					$element_id = avia_backend_safe_string('avia_'.$key, '_', true);
-					if($element_id == "avia_")
+					
+				
+					if($element_id == "avia_" || !empty($this->form_params['numeric_names']) )
 					{
 						$iterations ++;
 						$element_id = "avia_".$iterations;
@@ -198,8 +232,14 @@ if( ! class_exists( 'avia_form' ) )
 					
 					$element['class'] .= !empty($element['width']) ? " form_element form_".$element['width'] : "";
 					
+					if($el_count - $counter === 0)
+					{
+						$element['class'] .= " av-last-visible-form-element";
+					}
+					
+					
 					$element = apply_filters('avf_form_el_filter', $element, $this->formID, $this->form_params);
-					$this->$element['type']($element_id.$this->id_sufix, $element);
+					$this->{$element['type']}($element_id.$this->id_sufix, $element);
 				}
 			}
 		}
@@ -213,25 +253,25 @@ if( ! class_exists( 'avia_form' ) )
 		function display_form($return = false)
 		{
 			$success = '<div id="ajaxresponse'.$this->id_sufix.'" class="ajaxresponse ajaxresponse'.$this->id_sufix.' hidden"></div>';
-			$submit_attr = apply_filters('avf_contact_form_submit_button_attr', '', $this->formID, $this->form_params);
+			
+			$call_instance = $this->execute[0];
+			$call_function = $this->execute[1];
 			
 			
-			if($this->submit_form && $this->send())
+			if($this->submit_form && $call_instance->$call_function( $this ) && empty($this->error_msg))
 			{
 				$success = '<div id="ajaxresponse'.$this->id_sufix.'" class="ajaxresponse ajaxresponse'.$this->id_sufix.'">'.$this->form_params['success'].'</div>';
 			}
 			else
 			{
-				
-				$p_class = $this-> auto_width();
-				if(!empty($p_class)) $p_class .= " modified_width";
-				
-				
+				$this->output .= $this->error_msg;
 				$this->output .= $this->elements_html;
-				$this->output .= '<p class="form_element '.$p_class.'">';
-				$this->output .= '<input type="hidden" value="1" name="avia_generated_form'.$this->formID.'" />';
-				$this->output .= '<input type="submit" value="'.$this->form_params['submit'].'" class="button" '.$submit_attr.' data-sending-label="'.__('Sending','avia_framework').'"/>';
-				$this->output .= '</p>';
+				
+				if(empty($this->button_html))
+				{
+					$this->button(false, array()); // generate a default button is none are defined via the form builder
+					$this->output .= $this->button_html;
+				}
 			}
 
 
@@ -246,6 +286,9 @@ if( ! class_exists( 'avia_form' ) )
 				echo $this->output;
 			}
 		}
+		
+		
+		
 
 		/**
          * html
@@ -264,6 +307,37 @@ if( ! class_exists( 'avia_form' ) )
 		}
 		
 		
+		function button($id = "", $element = array())
+		{
+			if(!empty( $this->button_html )) return;
+			
+			$submit_label = isset( $element['label'] ) ? $element['label'] : $this->form_params['submit'];
+			$class = isset($element['class']) ? $element['class'] : $this-> auto_width();
+			if(!empty($class)) $class .= " modified_width";
+			if(!empty( $element['disabled']) )  $class .= " av-hidden-submit";
+			
+					
+			$this->button_html  = '<p class="form_element '.$class.'">';
+			$this->button_html .= '<input type="hidden" value="1" name="avia_generated_form'.$this->formID.'" />';
+			$this->button_html .= '<input type="submit" value="'.$submit_label.'" class="button" '.$this->submit_attr.' data-sending-label="'.__('Sending','avia_framework').'"/>';
+			$this->button_html .= '</p>';
+			
+			if($id)
+			{
+				$this->elements_html .= $this->button_html;
+			}
+			else
+			{
+				return $this->button_html;
+			}
+		} 
+		
+		
+		function number($id, $element)
+		{
+			$this->text($id, $element, 'number');
+		}
+		
 		/**
          * text
          *
@@ -272,22 +346,30 @@ if( ! class_exists( 'avia_form' ) )
          * @param string $id holds the key of the element
          * @param array $element data array of the element that should be created
          */
-		function text($id, $element)
+         
+		function text($id, $element, $type = 'text')
 		{
-			$p_class = $required = $element_class = $value = "";
+
+			$p_class = $required = $element_class = $value = $extra = "";
 			
-			$type = 'text';
 			// if($element['check'] == "is_email") $type = 'email'; //cant use this because of ie8 + 9
 			
 			if(!empty($element['check']))
 			{
 				$extra = "*";
-				$required = ' <abbr class="required" title="required">*</abbr>';
+				$required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
 				$element_class = $element['check'];
 				$p_class = $this->check_element($id, $element);
 			}
 
-			if(!empty($_POST[$id])) $value = esc_html(urldecode($_POST[$id]));
+			if(isset($_POST[$id])) 
+			{
+				$value = esc_html(urldecode($_POST[$id]));
+			}
+			else if( !empty( $element['value'] ) )
+			{
+				$value = $element['value'];
+			}
 
 			$this->elements_html .= "<p class='".$p_class.$element['class']."' id='element_$id'>";
 			$label = '<label for="'.$id.'">'.$element['label'].$required.'</label>';
@@ -333,12 +415,19 @@ if( ! class_exists( 'avia_form' ) )
 
             if(!empty($element['check']))
             {
-                $required = ' <abbr class="required" title="required">*</abbr>';
+                $required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
                 $element_class = $element['check'];
                 $p_class = $this->check_element($id, $element);
             }
 
-            if(!empty($_POST[$id])) $value = esc_html(urldecode($_POST[$id]));
+            if(isset($_POST[$id])) 
+			{
+				$value = esc_html(urldecode($_POST[$id]));
+			}
+			else if( !empty( $element['value'] ) )
+			{
+				$value = $element['value'];
+			}
 
 			if($this->placeholder)
 			{
@@ -415,7 +504,10 @@ if( ! class_exists( 'avia_form' ) )
                 dayNames: AviaDatepickerTranslation.dayNames,
                 dateFormat: AviaDatepickerTranslation.dateFormat,
                 firstDay: AviaDatepickerTranslation.firstDay,
-                isRTL: AviaDatepickerTranslation.isRTL
+                isRTL: AviaDatepickerTranslation.isRTL,
+                changeMonth: true,
+				changeYear: true,
+				yearRange: "c-80:c+10"
             }); });';
 			echo "\n</script>\n";
         }
@@ -444,7 +536,7 @@ if( ! class_exists( 'avia_form' ) )
 			if(!empty($element['check']))
 			{
 				if(!empty($_POST[$id])) $checked = 'checked="checked"';
-				$required = ' <abbr class="required" title="required">*</abbr>';
+				$required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
 				$element_class = $element['check'];
 				$p_class = $this->check_element($id, $element);
 			}
@@ -476,22 +568,38 @@ if( ! class_exists( 'avia_form' ) )
 				$element['options'] = explode(',',$element['options']);
 			}
 
-			$p_class = $required = $element_class = $prefilled_value = $select = "";
+			$p_class = $required = $element_class = $prefilled_value = $select = $extra  = "";
 
 			if(!empty($element['check']))
 			{
-				$required = ' <abbr class="required" title="required">*</abbr>';
+				$extra = "*";
+				$required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
 				$element_class = $element['check'];
 				$p_class = $this->check_element($id, $element);
 			}
-
-			if(!empty($_POST[$id])) $prefilled_value = esc_html(urldecode($_POST[$id]));
-
+			
+			if(isset($_POST[$id])) 
+			{
+				$prefilled_value = esc_html(urldecode($_POST[$id]));
+			}
+			else if( !empty( $element['value'] ) )
+			{
+				$prefilled_value = $element['value'];
+			}
+			
+			if($this->placeholder)
+			{
+				$label = array( $element['label'].$extra."|" );
+				$element['options'] = array_merge($label,$element['options']);
+			}
+			
+			
 			foreach($element['options'] as $option)
 			{
 				$key = $value = trim($option);
 				$suboptions =  explode('|',$option);
-				if(is_array($suboptions) && !empty($suboptions[1]))
+				
+				if(is_array($suboptions) && isset($suboptions[1]))
 				{
 					$key = trim($suboptions[1]);
 					$value = trim($suboptions[0]);
@@ -544,12 +652,19 @@ if( ! class_exists( 'avia_form' ) )
 			if(!empty($element['check']))
 			{
 				$extra = "*";
-				$required = ' <abbr class="required" title="required">*</abbr>';
+				$required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
 				$element_class = $element['check'];
 				$p_class = $this->check_element($id, $element);
 			}
 
-			if(!empty($_POST[$id])) $value = esc_html(urldecode($_POST[$id]));
+			if(isset($_POST[$id])) 
+			{
+				$value = esc_html(urldecode($_POST[$id]));
+			}
+			else if( !empty( $element['value'] ) )
+			{
+				$value = $element['value'];
+			}
 			
 			$label = '	 <label for="'.$id.'" class="textare_label hidden textare_label_'.$id.'">'.$element['label'].$required.'</label>';
 			$placeholder = "";
@@ -604,7 +719,7 @@ if( ! class_exists( 'avia_form' ) )
 
 			if(!empty($element['check']))
 			{
-				$required = ' <abbr class="required" title="required">*</abbr>';
+				$required = ' <abbr class="required" title="'.__( 'required', 'avia_framework' ).'">*</abbr>';
 				$element_class = $element['check'];
 				$p_class = $this->check_element($id, $element);
 			}
@@ -658,14 +773,15 @@ if( ! class_exists( 'avia_form' ) )
          *
          * The send method tries to send the form. It builds the necessary email and submits it via wp_mail
          */
-		function send()
+		function send( $self_instance )
 		{	
 			$new_post = array();
 			foreach ($_POST as $key => $post)
 			{
 				$new_post[str_replace('avia_','',$key)] = $post;
 			}
-
+			
+			
 			$mymail 	= empty($this->form_params['myemail']) ? $new_post['myemail'] : $this->form_params['myemail'];
 			$myblogname = empty($this->form_params['myblogname']) ? $new_post['myblogname'] : $this->form_params['myblogname'];
 
@@ -678,7 +794,17 @@ if( ! class_exists( 'avia_form' ) )
 			//hook to stop execution here and do something different with the data
 			$proceed = apply_filters( 'avf_form_send', true, $new_post, $this->form_params, $this );
 
-			if( ! $proceed ) return true;
+			if( ! $proceed )
+			{
+				if( is_null( $proceed ) )
+				{
+					return false;
+				}
+				else
+				{
+					return true;
+				}
+			}
 
 			//set the email adress
 			$from = "no-reply@wp-message.com";
@@ -732,9 +858,11 @@ if( ! class_exists( 'avia_form' ) )
 
 			foreach($this->form_elements as $key => $element)
 			{
+				if(isset($element['id'])) $key = $element['id'];
+				
 				$key = avia_backend_safe_string($key, '_', true);
 
-				if(empty($key))
+				if(empty($key) || !empty($this->form_params['numeric_names']) )
 				{
 					$iterations++;
 					$key = $iterations;
@@ -769,6 +897,16 @@ if( ! class_exists( 'avia_form' ) )
 			
 			foreach($copy as $send_to_mail)
 			{
+				//if a demo email is mistakenly used change it to the admin url
+				if( strpos( $send_to_mail, '@kriesi.at') !== false && isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] != "www.kriesi.at")
+				{
+					if(!defined('AV_TESTSERVER'))
+					{
+						$send_to_mail = get_admin_url();
+					}
+				}
+				
+				
 				if($use_wpmail)
 				{
 					$header .= 'From: '. $from . " <".$from."> \r\n";
@@ -794,10 +932,20 @@ if( ! class_exists( 'avia_form' ) )
 
 				$from = apply_filters("avf_form_autoresponder_from", $from, $new_post, $this->form_params);
 
+
+				$this->form_params['autoresponder_email'] = array_filter(array_map('trim', explode($delimiter, $this->form_params['autoresponder_email'])));
+				
+				if(is_array($this->form_params['autoresponder_email']))
+				{
+					$this->form_params['autoresponder_email'] = $this->form_params['autoresponder_email'][0];
+				}
+
+				
+
 				if($use_wpmail)
 				{
 					$header .= 'From:' . get_bloginfo('name') .' <'. urldecode( $this->form_params['autoresponder_email']) . "> \r\n";
-					wp_mail($from, $this->form_params['autoresponder_subject'], $message, $header);
+					$result = wp_mail($from, $this->form_params['autoresponder_subject'], $message, $header);
 				}
 				else
 				{
@@ -828,7 +976,7 @@ if( ! class_exists( 'avia_form' ) )
 				{
 					case 'is_empty':
 
-						if(!empty($_POST[$id])) return "valid";
+						if(!empty($_POST[$id]) || $_POST[$id] === "0") return "valid";
 
 					break;
 
@@ -847,13 +995,19 @@ if( ! class_exists( 'avia_form' ) )
 
 					case 'is_number':
 
-						if(preg_match("!^(\d)*$!", urldecode($_POST[$id]))) return "valid";
+						if(preg_match("!^[1-9]\d*([\.|\,]\d+)?$!", urldecode($_POST[$id]))) return "valid";
 
 					break;
 
 					case 'is_phone':
 
 						if(preg_match("!^(\d|\s|\-|\/|\(|\)|\[|\]|e|x|t|ension|\.|\+|\_|\,|\:|\;){3,}$!", urldecode($_POST[$id]))) return "valid";
+
+					break;
+					
+					case 'is_url':
+
+						if(preg_match("!^(https?|ftp)://(-\.)?([^\s/?\.#-]+\.?)+(/[^\s]*)?$!", urldecode($_POST[$id]))) return "valid";
 
 					break;
 

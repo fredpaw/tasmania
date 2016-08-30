@@ -10,7 +10,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 
 	class AviaBuilder
 	{
-		const VERSION = '0.8';
+		const VERSION = '0.9';
 		public static $mode = "";
 		public static $path = array();
 		public static $resources_to_load = array();
@@ -23,6 +23,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		public $shortcode_class;
 		public $tabs;
 		public $builderTemplate;
+		public $disable_drag_drop = false;
 
 		/**
 		 * Initializes plugin variables and sets up WordPress hooks/actions.
@@ -38,7 +39,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			$this->paths['assetsPath']	= trailingslashit( $this->paths['pluginPath'] ) . 'assets/';
 			$this->paths['imagesURL']	= trailingslashit( $this->paths['pluginUrl'] ) . 'images/';
 			$this->paths['configPath']	= apply_filters('avia_builder_config_path', $this->paths['pluginPath'] .'config/');
-			
+						
 			AviaBuilder::$path = $this->paths;
 			AviaBuilder::$default_iconfont = apply_filters('avf_default_iconfont', array( 'entypo-fontello' => 
 																						array(
@@ -103,7 +104,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		 *Load all the required library files.
 		 **/
 		public function loadLibraries() 
-		{
+		{			
 			require_once( $this->paths['pluginPath'].'php/pointer.class.php' );
 			require_once( $this->paths['pluginPath'].'php/shortcode-helper.class.php' ); 
 			require_once( $this->paths['pluginPath'].'php/generic-helper.class.php' );
@@ -143,6 +144,9 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		 **/
 		protected function addAdminFilters() 
 		{
+			//lock drag and drop?
+			$this->disable_drag_drop = apply_filters('avf_allow_drag_drop', false);
+			
 			// add_filter('tiny_mce_before_init', array($this, 'tiny_mce_helper')); // remove span tags from tinymce - currently disabled, doesnt seem to be necessary
 			add_filter( 'admin_body_class', array( $this, 'admin_body_class' ) );
 		}
@@ -173,7 +177,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			
 			//default wordpress hooking
 			add_action('wp_head', array($this,'load_shortcode_assets'), 2000);
-			add_action( 'template_redirect',array($this, 'template_redirect'), 1000);
+			add_filter( 'template_include' , array($this, 'template_include'), 2000); 
 		}
 		
 		/**
@@ -182,14 +186,18 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		public function load_shortcode_assets()
 		{
 			$output = "";
+			$output .= avia_font_manager::load_font();
 			
+			/* if the builder is decoupled from the theme then make sure to only load iconfonts if they are actually necessary. in enfolds case it is
+				
 			foreach(AviaBuilder::$resources_to_load as $element)
 			{
 				if($element['type'] == 'iconfont')
 				{
-					$output .= avia_font_manager::load_font($element);
+					$output .= avia_font_manager::load_font();
 				}
 			}
+			*/
 			
 			echo $output;
 		}
@@ -250,6 +258,8 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		 **/
 		public function setFullwidthElements($elements = array())
 	 	{
+		 	$elements = apply_filters('avf_fwd_elements', $elements);
+		 	
 			AviaBuilder::$full_el_no_section = $elements;
 			AviaBuilder::$full_el = array_merge(array('av_section'), $elements);
 		}
@@ -318,6 +328,12 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 	        {
 	        	$classes .= ' avia-advanced-editor-enabled ';
 	        }
+	        
+	        if($this->disable_drag_drop == true)
+	        {
+		        $classes .= ' av-no-drag-drop ';
+	        }
+	        
 	        return $classes;
         }
         
@@ -429,7 +445,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 		/**
 		 *function that checks if a dynamic template exists and uses that template instead of the default page template
 		 **/
-    	public function template_redirect()
+    	public function template_include( $original_template )
     	{	
     		global $avia_config;
     	
@@ -453,8 +469,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
     	   	   		if("default" == $template_file || empty($template_file))
     	   	   		{
     	   	   			$avia_config['conditionals']['is_builder_template'] = true;
-                    	require_once($template);
-                    	exit();
+    	   	   			return $template;
     	   	   		}
     	   	   }
     	   	   
@@ -463,11 +478,12 @@ if ( !class_exists( 'AviaBuilder' ) ) {
     	   	   {
     	   	   		if($template = locate_template('page.php', false))
     	   	   		{
-    	   	   			require_once($template);
-    	   	   			exit();
+    	   	   			return $template;
     	   	   		}
     	   	   }
     	   	}
+    	   	
+    	   	return $original_template;
     	}
     	
     	public function apply_editor_wrap()
@@ -528,8 +544,11 @@ if ( !class_exists( 'AviaBuilder' ) ) {
             
             
             echo "<div id='postdivrich_wrap' {$editor_class}>";
-            echo '<a id="avia-builder-button" href="#" class="avia-builder-button button-primary '.$button_class.' '.$params['button_class'].'" data-active-button="'.$params['default_label'].'" data-inactive-button="'.$params['visual_label'].'">'.$active_builder.'</a>';
             
+            if($this->disable_drag_drop == false)
+			{
+            echo '<a id="avia-builder-button" href="#" class="avia-builder-button button-primary '.$button_class.' '.$params['button_class'].'" data-active-button="'.$params['default_label'].'" data-inactive-button="'.$params['visual_label'].'">'.$active_builder.'</a>';
+            }
             if($params['note']) echo "<div class='av-builder-note ".$params['noteclass']."'>".$params['note']."</div>";
             
 		}
@@ -552,7 +571,7 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			$this->shortcode_buttons = apply_filters('avia_show_shortcode_button', array());	
 			
 			
-			if(!empty($this->shortcode_buttons))
+			if(!empty($this->shortcode_buttons) && $this->disable_drag_drop == false)
 			{
 				$this->tabs = isset($element['tab_order']) ? array_flip($element['tab_order']) : array();
 				foreach($this->tabs as &$empty_tabs) $empty_tabs = array();
@@ -595,21 +614,33 @@ if ( !class_exists( 'AviaBuilder' ) ) {
 			$active_builder  = AviaHelper::builder_status($post_ID);
 			
 			
-			$extra = AviaBuilder::$mode != true ? "" : AviaBuilder::$mode;
+			$extra = AviaBuilder::$mode != true ? "" : "avia_mode_".AviaBuilder::$mode;
 			$hotekey_info = htmlentities($element['desc'], ENT_QUOTES, get_bloginfo( 'charset' ));
 			
 			$output  = '<div class="shortcode_button_wrap avia-tab-container"><div class="avia-tab-title-container">'.$title.'</div>'.$output.'</div>';
 			$output .= '<input type="hidden" value="'.$active_builder.'" name="aviaLayoutBuilder_active" id="aviaLayoutBuilder_active" />';
+			
+			if($this->disable_drag_drop == false)
+			{
 			$output .= '<a href="#info" class="avia-hotkey-info" data-avia-help-tooltip="'.$hotekey_info.'">'.__('Information', 'avia_framework' ).'</a>';
-			
-			
-			
 			$output .= $this->builderTemplate->create_save_button();
-			$output .= "<div class='layout-builder-wrap  {$extra}'>";
-			$output .= "	<div class='avia-controll-bar'></div>";
+			}
+			
+			$output .= "<div class='layout-builder-wrap {$extra}'>";
+			
+			if($this->disable_drag_drop == false)
+			{
+				$output .= "	<div class='avia-controll-bar'></div>";
+			}
+			
 			$output .= "	<div id='aviaLayoutBuilder' class='avia-style avia_layout_builder avia_connect_sort preloading av_drop' data-dragdrop-level='0'>";
 			$output .= "	</div>";
-			$output .= "	<textarea id='_aviaLayoutBuilderCleanData' name='_aviaLayoutBuilderCleanData'>". get_post_meta($post_ID, '_aviaLayoutBuilderCleanData', true)."</textarea>"; //testdrive: added htmlentities
+			
+			
+			$clean_data = get_post_meta($post_ID, '_aviaLayoutBuilderCleanData', true);
+			// $clean_data = htmlentities($clean_data, ENT_QUOTES, get_bloginfo( 'charset' )); //entity-test: added htmlentities
+			
+			$output .= "	<textarea id='_aviaLayoutBuilderCleanData' name='_aviaLayoutBuilderCleanData'>".$clean_data."</textarea>"; 
 			$output .= "</div>";
 			
 			return $output;

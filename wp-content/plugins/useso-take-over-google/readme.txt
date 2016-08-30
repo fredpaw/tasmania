@@ -3,7 +3,7 @@ Contributors: xiaoxu125634
 Donate link: http://www.brunoxu.com/
 Tags: Open Sans, Google Fonts, Google Web Fonts, useso, 360前端公共库, Google字体库, Google公共库, Useso公共库, Useso字体库
 Requires at least: 3.0
-Tested up to: 4.2.3
+Tested up to: 4.5.2
 Stable tag: trunk
 
 用360前端公共库Useso接管Google字体库和Google公共库，无需设置，插件安装激活后即刻生效。
@@ -26,6 +26,21 @@ Stable tag: trunk
 2. Activate the plugin through the 'Plugins' menu in WordPress background.
 
 == Changelog ==
+
+= 1.6.5 =
+* 2016-06-17
+* 修复Avada主题的webfont.js不兼容问题。
+
+= 1.6.4 =
+* 2015-09-13
+* gravatar头像处理补充：现在出现了s.gravatar.com这样的连接。
+
+= 1.6.3 =
+* 2015-08-25
+* 加上处理：部分http网站还会有https://fonts.useso.com/连接。
+* 增加处理的gravatar头像图片处理的安全性，保证不会影响到文章内容中的出现。
+* 不要启用wpjam-qiniu插件的“使用 360 前端公共库”功能，启用时编辑插件会导致插件失效。
+* 本次更新修复了上面的潜在危险，但还是强烈建议检查下，保证没有启用“使用 360 前端公共库”功能。
 
 = 1.6.2 =
 * 2015-07-24
